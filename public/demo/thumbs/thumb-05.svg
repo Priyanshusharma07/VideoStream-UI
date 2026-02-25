@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+    <radialGradient id="v" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="#0b1020"/>
+  <rect width="960" height="540" rx="36" fill="url(#g)" opacity=".35"/>
+  <rect width="960" height="540" rx="36" fill="url(#v)"/>
+  <g fill="#fff" fill-opacity=".22">
+    <path d="M0 360c120-40 240-40 360 0s240 40 600 0v180H0V360z"/>
+    <path d="M0 390c140-30 260-30 400 0s260 30 560 0v150H0V390z" opacity=".7"/>
+  </g>
+  <text x="56" y="98" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="40" font-weight="800" fill="#fff" fill-opacity=".9">Street Food Tour</text>
+  <text x="56" y="136" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="22" fill="#fff" fill-opacity=".55">Kolkata Edition</text>
+</svg>
+

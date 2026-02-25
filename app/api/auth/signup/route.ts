@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { ApiResult, LoginResponse } from "@/lib/contracts/auth";
+import type { ApiResult, SignupResponse } from "@/lib/contracts/auth";
 
 function getRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
@@ -18,19 +18,23 @@ function json<T>(payload: T, status = 200) {
 }
 
 const DEMO_EMAIL = "demo@streamhub.com";
-const DEMO_PASSWORD = "demo1234";
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => null)) as unknown;
   const record = getRecord(body);
   const fieldErrors: Record<string, string> = {};
 
+  const rawName = record?.name;
   const rawEmail = record?.email;
   const rawPassword = record?.password;
 
+  const name = isNonEmptyString(rawName) ? rawName.trim() : "";
   const email = isNonEmptyString(rawEmail) ? rawEmail.trim() : "";
   const password = isNonEmptyString(rawPassword) ? rawPassword : "";
 
+  if (name.length < 2) {
+    fieldErrors.name = "Name is required (min 2 characters).";
+  }
   if (!email || !isEmail(email)) {
     fieldErrors.email = "Email is required and must be valid.";
   }
@@ -39,7 +43,7 @@ export async function POST(req: Request) {
   }
 
   if (Object.keys(fieldErrors).length > 0) {
-    const payload: ApiResult<LoginResponse> = {
+    const payload: ApiResult<SignupResponse> = {
       ok: false,
       error: {
         code: "validation_error",
@@ -50,29 +54,30 @@ export async function POST(req: Request) {
     return json(payload, 400);
   }
 
-  if (email !== DEMO_EMAIL || password !== DEMO_PASSWORD) {
-    const payload: ApiResult<LoginResponse> = {
+  if (email === DEMO_EMAIL) {
+    const payload: ApiResult<SignupResponse> = {
       ok: false,
       error: {
-        code: "invalid_credentials",
-        message: "Invalid email or password.",
+        code: "email_taken",
+        message: "An account with this email already exists.",
+        fieldErrors: { email: "Email already in use." },
       },
     };
-    return json(payload, 401);
+    return json(payload, 409);
   }
 
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-  const response: LoginResponse = {
+  const response: SignupResponse = {
     accessToken: `demo-access-${crypto.randomUUID()}`,
     refreshToken: `demo-refresh-${crypto.randomUUID()}`,
     expiresAt,
     user: {
       id: crypto.randomUUID(),
       email,
-      name: "Demo User",
+      name,
     },
   };
 
-  const payload: ApiResult<LoginResponse> = { ok: true, data: response };
+  const payload: ApiResult<SignupResponse> = { ok: true, data: response };
   return json(payload, 200);
 }

@@ -19,9 +19,10 @@ function isEmail(value: string) {
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => null)) as unknown;
   const record = getRecord(body);
-  const email = record?.email;
+  const rawEmail = record?.email;
+  const email = isNonEmptyString(rawEmail) ? rawEmail.trim() : "";
 
-  if (!isNonEmptyString(email) || !isEmail(email)) {
+  if (!email || !isEmail(email)) {
     const payload: ApiResult<ForgotPasswordResponse> = {
       ok: false,
       error: {

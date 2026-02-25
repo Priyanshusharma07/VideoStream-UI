@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#06b6d4"/>
+      <stop offset="0.5" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <radialGradient id="v" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="#0b1020"/>
+  <rect x="0" y="0" width="960" height="540" rx="36" fill="url(#g)" opacity=".35"/>
+  <rect x="0" y="0" width="960" height="540" rx="36" fill="url(#v)"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity=".35">
+    <path d="M80 420 C 260 300, 340 520, 520 400 S 760 320, 880 420" stroke-width="6"/>
+    <path d="M100 140 C 260 40, 400 220, 560 120 S 760 60, 860 140" stroke-width="4"/>
+  </g>
+  <g>
+    <circle cx="480" cy="270" r="64" fill="#000" fill-opacity=".35"/>
+    <circle cx="480" cy="270" r="62" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
+    <path d="M462 240v60a6 6 0 0 0 9 5l50-30a6 6 0 0 0 0-10l-50-30a6 6 0 0 0-9 5z" fill="#fff" fill-opacity=".8"/>
+  </g>
+  <text x="56" y="86" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="42" font-weight="700" fill="#fff" fill-opacity=".9">Neon Dreams</text>
+  <text x="56" y="126" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="22" fill="#fff" fill-opacity=".55">Exploring cyber-vibe aesthetics</text>
+</svg>
+

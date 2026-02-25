@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { StreamHubLogo } from "@/components/StreamHubLogo";
 import {
   AppleIcon,
@@ -11,12 +12,15 @@ import {
   GoogleIcon,
 } from "@/components/icons";
 import { login } from "@/lib/auth-client";
+import { useToast } from "@/components/ui/ToastProvider";
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
 export default function LoginPage() {
+  const router = useRouter();
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,6 +58,8 @@ export default function LoginPage() {
         return;
       }
       setSuccess(`Signed in as ${result.data.user.email}.`);
+      toast.push({ variant: "success", title: "Signed in", message: "Welcome back!" });
+      router.push("/feed");
     });
   }
 
@@ -173,6 +179,13 @@ export default function LoginPage() {
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <button
                   type="button"
+                  onClick={() =>
+                    toast.push({
+                      variant: "info",
+                      title: "Google sign-in",
+                      message: "Coming soon (demo).",
+                    })
+                  }
                   className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
                   aria-label="Continue with Google"
                 >
@@ -180,6 +193,13 @@ export default function LoginPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() =>
+                    toast.push({
+                      variant: "info",
+                      title: "Apple sign-in",
+                      message: "Coming soon (demo).",
+                    })
+                  }
                   className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
                   aria-label="Continue with Apple"
                 >
@@ -187,6 +207,13 @@ export default function LoginPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() =>
+                    toast.push({
+                      variant: "info",
+                      title: "Facebook sign-in",
+                      message: "Coming soon (demo).",
+                    })
+                  }
                   className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
                   aria-label="Continue with Facebook"
                 >

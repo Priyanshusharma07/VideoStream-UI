@@ -1,12 +1,4 @@
-export type ApiError = {
-  code: string;
-  message: string;
-  fieldErrors?: Record<string, string>;
-};
-
-export type ApiResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: ApiError };
+export type { ApiError, ApiResult } from "./api";
 
 export type LoginRequest = {
   email: string;
@@ -16,6 +8,12 @@ export type LoginRequest = {
 
 export type ForgotPasswordRequest = {
   email: string;
+};
+
+export type SignupRequest = {
+  name: string;
+  email: string;
+  password: string;
 };
 
 export type AuthUser = {
@@ -35,3 +33,4 @@ export type ForgotPasswordResponse = {
   status: "ok";
 };
 
+export type SignupResponse = LoginResponse;
