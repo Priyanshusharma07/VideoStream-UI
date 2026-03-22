@@ -36,7 +36,7 @@ Every endpoint returns a JSON object that always has an `ok` boolean:
 }
 ```
 
-TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, and `lib/contracts/content.ts`.
+TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, `lib/contracts/content.ts`, and `lib/contracts/upload.ts`.
 
 ---
 

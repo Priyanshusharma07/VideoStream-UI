@@ -3,10 +3,58 @@ import Image from "next/image";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppTopbar } from "@/components/app/AppTopbar";
 import { ForYouSection } from "@/components/feed/ForYouSection";
-import { getDemoFeed } from "@/lib/demo/content";
+import type { FeedPayload } from "@/lib/contracts/content";
 
-export default function FeedPage() {
-  const feed = getDemoFeed();
+function backendBase() {
+  const raw = process.env.NEXT_PUBLIC_API_BASE?.trim();
+  return raw ? raw.replace(/\/+$/, "") : "https://api.yourdomain.com";
+}
+
+function safeUrl(url: string | null | undefined, fallback: string) {
+  const trimmed = typeof url === "string" ? url.trim() : "";
+  return trimmed ? trimmed : fallback;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object";
+}
+
+function normalizeFeed(feed: FeedPayload): FeedPayload {
+  return {
+    ...feed,
+    subscriptions: (feed.subscriptions ?? []).map((s) => ({
+      ...s,
+      avatarUrl: safeUrl(s.avatarUrl, "/demo/avatars/avatar-02.svg"),
+    })),
+    trending: (feed.trending ?? []).map((v) => ({
+      ...v,
+      thumbnailUrl: safeUrl(v.thumbnailUrl, "/demo/thumbs/thumb-01.svg"),
+      creator: {
+        ...v.creator,
+        avatarUrl: safeUrl(v.creator.avatarUrl, "/demo/avatars/avatar-02.svg"),
+      },
+    })),
+    forYou: (feed.forYou ?? []).map((v) => ({
+      ...v,
+      thumbnailUrl: safeUrl(v.thumbnailUrl, "/demo/thumbs/thumb-01.svg"),
+      creator: {
+        ...v.creator,
+        avatarUrl: safeUrl(v.creator.avatarUrl, "/demo/avatars/avatar-02.svg"),
+      },
+    })),
+  };
+}
+
+export default async function FeedPage() {
+  const base = backendBase();
+  const res = await fetch(`${base}/feed`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load feed (HTTP ${res.status}).`);
+  const raw = (await res.json().catch(() => null)) as unknown;
+  const payload =
+    isRecord(raw) && typeof raw.ok === "boolean" && raw.ok
+      ? (raw.data as unknown)
+      : raw;
+  const feed = normalizeFeed(payload as FeedPayload);
 
   return (
     <div className="min-h-screen bg-[#070A12] text-white">
@@ -42,7 +90,7 @@ export default function FeedPage() {
               {feed.trending.map((v) => (
                 <Link
                   key={v.id}
-                  href={`/watch/${v.id}`}
+                  href={`/videos/${v.id}`}
                   className="w-[260px] shrink-0"
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">

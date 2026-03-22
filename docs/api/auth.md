@@ -2,7 +2,7 @@
 
 These endpoints are **mocked inside the Next.js app** so frontend can be built before the real backend is ready.
 
-Base URL (local): `http://localhost:3000`
+Base URL (local): `http://localhost:3001`
 
 ## Common response shape
 

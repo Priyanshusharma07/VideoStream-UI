@@ -13,6 +13,7 @@ import {
 } from "@/components/icons";
 import { login } from "@/lib/auth-client";
 import { useToast } from "@/components/ui/ToastProvider";
+import { saveAuthSession } from "@/lib/auth-session";
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -54,9 +55,14 @@ export default function LoginPage() {
     startTransition(async () => {
       const result = await login({ email: trimmedEmail, password });
       if (!result.ok) {
-        setError(result.error.message);
+        setError(result.error?.message ?? "Login failed.");
         return;
       }
+      saveAuthSession({
+        accessToken: result.data.accessToken,
+        refreshToken: result.data.refreshToken,
+        expiresAt: result.data.expiresAt,
+      });
       setSuccess(`Signed in as ${result.data.user.email}.`);
       toast.push({ variant: "success", title: "Signed in", message: "Welcome back!" });
       router.push("/feed");

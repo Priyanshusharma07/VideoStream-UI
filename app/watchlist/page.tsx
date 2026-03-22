@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { BookmarkIcon, PlayIcon } from "@/components/icons";
+import { RemoveFromWatchlistButton } from "@/components/watchlist/RemoveFromWatchlistButton";
 import { getDemoFeed } from "@/lib/demo/content";
 
 export default function WatchlistPage() {
@@ -165,14 +166,7 @@ export default function WatchlistPage() {
                     <div className="mt-0.5 text-[10px] text-white/30">Saved {v.savedAt}</div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => e.preventDefault()}
-                    className="shrink-0 rounded-xl bg-white/5 p-2 ring-1 ring-white/10 hover:bg-white/10"
-                    aria-label="Remove from watchlist"
-                  >
-                    <BookmarkIcon className="h-4 w-4 text-sky-400" />
-                  </button>
+                  <RemoveFromWatchlistButton videoId={v.id} />
                 </Link>
               ))}
             </div>

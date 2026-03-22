@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     startTransition(async () => {
       const result = await forgotPassword({ email: email.trim() });
       if (!result.ok) {
-        setError(result.error.message);
+        setError(result.error?.message ?? "Request failed.");
         return;
       }
       setMessage("If that email exists, we sent a reset link.");

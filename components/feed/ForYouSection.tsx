@@ -45,7 +45,7 @@ export function ForYouSection({
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((v) => (
-          <Link key={v.id} href={`/watch/${v.id}`} className="group">
+          <Link key={v.id} href={`/videos/${v.id}`} className="group">
             <VideoThumb video={v} className="h-44" />
             <div className="mt-3 flex items-start gap-3">
               <Image
@@ -74,4 +74,3 @@ export function ForYouSection({
     </section>
   );
 }
-

@@ -31,9 +31,10 @@ export default function SignUpPage() {
         email: form.email.trim(),
         password: form.password,
       });
+      console.log("Signup result:", result);
 
       if (!result.ok) {
-        setError(result.error.message);
+        setError(result.error?.message ?? "Signup failed.");
         return;
       }
 

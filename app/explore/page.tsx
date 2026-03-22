@@ -20,17 +20,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object";
 }
 
-function ExploreInner() {
-  const searchParams = useSearchParams();
-  const initialQ = (searchParams.get("q") ?? "").trim();
+function ExploreInner({ initialQ }: { initialQ: string }) {
   const [query, setQuery] = useState(initialQ);
   const [isPending, startTransition] = useTransition();
   const [results, setResults] = useState<SearchItem[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initialQ && initialQ !== query) setQuery(initialQ);
-  }, [initialQ, query]);
 
   const canSearch = useMemo(() => query.trim().length >= 2, [query]);
 
@@ -152,6 +146,12 @@ function ExploreInner() {
   );
 }
 
+function ExploreWithParams() {
+  const searchParams = useSearchParams();
+  const initialQ = (searchParams.get("q") ?? "").trim();
+  return <ExploreInner key={initialQ} initialQ={initialQ} />;
+}
+
 export default function ExplorePage() {
   return (
     <div className="min-h-screen bg-[#070A12] text-white">
@@ -163,7 +163,7 @@ export default function ExplorePage() {
           </div>
         }
       >
-        <ExploreInner />
+        <ExploreWithParams />
       </Suspense>
     </div>
   );

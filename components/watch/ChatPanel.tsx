@@ -1,11 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { VideoDetailsPayload } from "@/lib/contracts/content";
 
-type Message = VideoDetailsPayload["chat"]["messages"][number];
+export type ChatMessage = {
+  id: string;
+  user: { name: string; badge?: "mod" | "creator" };
+  message: string;
+  highlighted?: boolean;
+};
 
-function badgeLabel(badge: Message["user"]["badge"]) {
+function badgeLabel(badge: ChatMessage["user"]["badge"]) {
   if (badge === "mod") return "MOD";
   if (badge === "creator") return "STREAMER";
   return null;
@@ -15,10 +19,10 @@ export function ChatPanel({
   initialMessages,
   viewersLabel,
 }: {
-  initialMessages: Message[];
+  initialMessages: ChatMessage[];
   viewersLabel: string;
 }) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [text, setText] = useState("");
 
   const canSend = useMemo(() => text.trim().length > 0, [text]);
@@ -101,4 +105,3 @@ export function ChatPanel({
     </aside>
   );
 }
-

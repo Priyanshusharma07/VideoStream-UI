@@ -8,6 +8,9 @@ import { WatchActions } from "@/components/watch/WatchActions";
 import { VideoDescription } from "@/components/watch/VideoDescription";
 import { getDemoVideoDetails } from "@/lib/demo/content";
 
+// This is a dynamic route — params are only available at request time
+export const dynamic = "force-dynamic";
+
 export default async function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const details = getDemoVideoDetails(id);

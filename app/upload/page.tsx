@@ -1,14 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { UploadIcon, VideoIcon, CheckCircleIcon } from "@/components/icons";
+import { useToast } from "@/components/ui/ToastProvider";
+import { uploadVideoMultipart } from "@/lib/videos-client";
 
 type Visibility = "public" | "unlisted" | "private";
+type UploadStatus = "idle" | "uploading";
 
 export default function UploadPage() {
   const fileRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const toast = useToast();
+  const abortRef = useRef<AbortController | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [title, setTitle] = useState("");
@@ -17,38 +24,102 @@ export default function UploadPage() {
   const [visibility, setVisibility] = useState<Visibility>("public");
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<UploadStatus>("idle");
+  const [videoId, setVideoId] = useState<string | null>(null);
+
+  const isBusy = status !== "idle";
 
   function handleFile(f: File) {
-    if (!f.type.startsWith("video/")) return;
+    if (!f.type.startsWith("video/")) {
+      toast.push({
+        variant: "error",
+        title: "Unsupported file",
+        message: "Please select a video file (video/*).",
+      });
+      return;
+    }
     setFile(f);
     setDone(false);
+    setVideoId(null);
     setProgress(0);
   }
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragging(false);
+    if (isBusy) return;
     const f = e.dataTransfer.files[0];
     if (f) handleFile(f);
   }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (isBusy) return;
     const f = e.target.files?.[0];
     if (f) handleFile(f);
   }
 
-  function onSubmit(e: React.FormEvent) {
+  function cancelUpload() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+  }
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (isBusy) return;
     if (!file || !title.trim()) return;
-    startTransition(async () => {
-      // Simulate upload progress
-      for (let p = 0; p <= 100; p += 10) {
-        await new Promise((r) => setTimeout(r, 140));
-        setProgress(p);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      setProgress(0);
+      setStatus("uploading");
+
+      const parsedTags = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
+      const result = await uploadVideoMultipart({
+        file,
+        title: title.trim(),
+        description: description.trim() ? description.trim() : undefined,
+        tags: parsedTags.length > 0 ? parsedTags : undefined,
+        isPublic: visibility === "public",
+        signal: controller.signal,
+        onProgress: (p) => setProgress(p),
+      });
+
+      if (!result.ok) {
+        if (result.error.code === "unauthorized") {
+          toast.push({ variant: "error", title: "Please login to upload" });
+          router.push("/login");
+          return;
+        }
+        toast.push({
+          variant: "error",
+          title: "Upload failed",
+          message: result.error.message,
+        });
+        return;
       }
+
+      setVideoId(String(result.data.videoId));
       setDone(true);
-    });
+      toast.push({ variant: "success", title: "Upload complete" });
+
+      router.push(`/videos/${result.data.videoId}?processing=1`);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        toast.push({ variant: "info", title: "Upload canceled" });
+      } else {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        toast.push({ variant: "error", title: "Upload failed", message });
+      }
+    } finally {
+      abortRef.current = null;
+      setStatus("idle");
+    }
   }
 
   return (
@@ -83,6 +154,9 @@ export default function UploadPage() {
               <p className="text-sm text-white/60">
                 <span className="font-medium text-white/90">&ldquo;{title}&rdquo;</span> is processing. It will be available shortly.
               </p>
+              {videoId ? (
+                <p className="text-xs text-white/45">Video ID: {videoId}</p>
+              ) : null}
               <div className="flex gap-3 mt-2">
                 <button
                   type="button"
@@ -103,12 +177,13 @@ export default function UploadPage() {
             <form onSubmit={onSubmit} className="mt-8 space-y-6">
               {/* Drop zone */}
               <div
-                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                onDragOver={(e) => { e.preventDefault(); if (!isBusy) setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
-                onClick={() => fileRef.current?.click()}
+                onClick={() => { if (!isBusy) fileRef.current?.click(); }}
                 className={[
                   "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-10 text-center transition",
+                  isBusy ? "opacity-60 cursor-not-allowed" : "",
                   dragging
                     ? "border-cyan-400/60 bg-cyan-400/5"
                     : file
@@ -207,7 +282,7 @@ export default function UploadPage() {
               </div>
 
               {/* Progress */}
-              {isPending && (
+              {isBusy && (
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs text-white/50">
                     <span>Uploading...</span>
@@ -224,19 +299,29 @@ export default function UploadPage() {
 
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <Link
-                  href="/dashboard"
-                  className="inline-flex h-11 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
-                >
-                  Cancel
-                </Link>
+                {isBusy ? (
+                  <button
+                    type="button"
+                    onClick={cancelUpload}
+                    className="inline-flex h-11 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
+                  >
+                    Cancel Upload
+                  </button>
+                ) : (
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex h-11 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
+                  >
+                    Cancel
+                  </Link>
+                )}
                 <button
                   type="submit"
-                  disabled={!file || !title.trim() || isPending}
+                  disabled={!file || !title.trim() || isBusy}
                   className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-sky-500 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <UploadIcon className="h-4 w-4" />
-                  {isPending ? "Uploading..." : "Publish Video"}
+                  {isBusy ? "Uploading..." : "Publish Video"}
                 </button>
               </div>
             </form>
