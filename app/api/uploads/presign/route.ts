@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type { ApiResult } from "@/lib/contracts/api";
+import type { ApiResult } from "@/types/api";
 import type {
   CreatePresignedUploadResponse,
-} from "@/lib/contracts/upload";
+} from "@/types/upload";
 
 export const runtime = "nodejs";
 

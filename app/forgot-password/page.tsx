@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { MailIcon } from "@/components/icons";
-import { forgotPassword } from "@/lib/auth-client";
+import { forgotPassword } from "@/services/auth-client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

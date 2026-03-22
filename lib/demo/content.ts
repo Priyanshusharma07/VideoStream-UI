@@ -3,7 +3,7 @@ import type {
   DashboardPayload,
   FeedPayload,
   VideoDetailsPayload,
-} from "../contracts/content";
+} from "@/types/content";
 
 const creators: Creator[] = [
   { id: "c1", name: "Dev Journey", avatarUrl: "/demo/avatars/avatar-01.svg" },
@@ -230,4 +230,3 @@ export function getDemoDashboard(): DashboardPayload {
     ],
   };
 }
-

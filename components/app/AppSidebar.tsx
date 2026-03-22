@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Creator } from "@/lib/contracts/content";
+import type { Creator } from "@/types/content";
 import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { BookmarkIcon, CompassIcon, HomeIcon } from "@/components/icons";
 
@@ -104,4 +104,3 @@ export function AppSidebar({
     </aside>
   );
 }
-

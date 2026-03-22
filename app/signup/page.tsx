@@ -5,7 +5,7 @@ import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LockIcon, MailIcon, UserIcon } from "@/components/icons";
-import { signup } from "@/lib/auth-client";
+import { signup } from "@/services/auth-client";
 import { useToast } from "@/components/ui/ToastProvider";
 
 export default function SignUpPage() {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import type { Video } from "@/lib/contracts/content";
+import type { Video } from "@/types/content";
 import { VideoThumb } from "@/components/content/VideoThumb";
 
 export function ForYouSection({

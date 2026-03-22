@@ -1,6 +1,6 @@
-import type { ApiResult } from "./contracts/api";
-import { postApi } from "./api-client";
-import { getAccessToken } from "./auth-session";
+import type { ApiResult } from "@/types/api";
+import { postApi } from "@/services/api-client";
+import { getAccessToken } from "@/lib/auth-session";
 import axios from "axios";
 
 export type InitiateVideoUploadRequest = {

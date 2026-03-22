@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type {
   ApiResult,
   ForgotPasswordResponse,
-} from "@/lib/contracts/auth";
+} from "@/types/auth";
 
 function getRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;

@@ -1,4 +1,4 @@
-import type { ApiError, ApiResult } from "./contracts/api";
+import type { ApiError, ApiResult } from "@/types/api";
 
 const API_BASE_RAW = process.env.NEXT_PUBLIC_API_BASE;
 const API_BASE = API_BASE_RAW ? API_BASE_RAW.replace(/\/+$/, "") : "";

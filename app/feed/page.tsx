@@ -3,7 +3,7 @@ import Image from "next/image";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppTopbar } from "@/components/app/AppTopbar";
 import { ForYouSection } from "@/components/feed/ForYouSection";
-import type { FeedPayload } from "@/lib/contracts/content";
+import type { FeedPayload } from "@/types/content";
 
 function backendBase() {
   const raw = process.env.NEXT_PUBLIC_API_BASE?.trim();

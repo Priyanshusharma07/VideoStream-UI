@@ -65,4 +65,3 @@ export type DashboardPayload = {
     progress: number;
   }>;
 };
-

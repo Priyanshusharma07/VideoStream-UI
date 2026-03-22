@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { ApiResult, SignupResponse } from "@/lib/contracts/auth";
+import type { ApiResult, SignupResponse } from "@/types/auth";
 
 function getRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;

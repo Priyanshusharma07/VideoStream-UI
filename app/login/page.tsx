@@ -11,7 +11,7 @@ import {
   FacebookIcon,
   GoogleIcon,
 } from "@/components/icons";
-import { login } from "@/lib/auth-client";
+import { login } from "@/services/auth-client";
 import { useToast } from "@/components/ui/ToastProvider";
 import { saveAuthSession } from "@/lib/auth-session";
 

@@ -2,7 +2,7 @@
 
 > **Status:** Demo / Mock — all endpoints are implemented as Next.js Route Handlers inside `app/api/`.  
 > They return realistic data so the UI can be developed and tested without a real backend.  
-> When a real backend is ready, swap the `fetch` call base-URL in `lib/auth-client.ts` and update the route handlers accordingly.
+> When a real backend is ready, set `NEXT_PUBLIC_API_BASE` and/or adjust the API helpers in `services/api-client.ts` and `services/auth-client.ts`.
 
 ---
 
@@ -36,7 +36,7 @@ Every endpoint returns a JSON object that always has an `ok` boolean:
 }
 ```
 
-TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, `lib/contracts/content.ts`, and `lib/contracts/upload.ts`.
+TypeScript types live in `types/api.ts`, `types/auth.ts`, `types/content.ts`, and `types/upload.ts`.
 
 ---
 
@@ -88,7 +88,7 @@ TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, `lib/c
 - Email: `demo@streamhub.com`  
 - Password: `demo1234`
 
-**Used by:** `app/login/page.tsx` → `lib/auth-client.ts → login()`
+**Used by:** `app/login/page.tsx` → `services/auth-client.ts → login()`
 
 ---
 
@@ -134,7 +134,7 @@ TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, `lib/c
 | `400` | `validation_error` | Missing/invalid fields; `fieldErrors` populated |
 | `409` | `email_taken` | Email already registered (demo blocks `demo@streamhub.com`) |
 
-**Used by:** `app/signup/page.tsx` → `lib/auth-client.ts → signup()`
+**Used by:** `app/signup/page.tsx` → `services/auth-client.ts → signup()`
 
 ---
 
@@ -161,7 +161,7 @@ TypeScript types live in `lib/contracts/api.ts`, `lib/contracts/auth.ts`, `lib/c
 |------|--------|-------|
 | `400` | `validation_error` | Invalid or missing email |
 
-**Used by:** `app/forgot-password/page.tsx` → `lib/auth-client.ts → forgotPassword()`
+**Used by:** `app/forgot-password/page.tsx` → `services/auth-client.ts → forgotPassword()`
 
 ---
 
@@ -421,7 +421,7 @@ type SearchItem = {
 
 ## TypeScript Contracts
 
-All shared types are centralised in `lib/contracts/`:
+All shared types are centralised in `types/`:
 
 | File | Contents |
 |------|----------|
@@ -431,7 +431,7 @@ All shared types are centralised in `lib/contracts/`:
 
 ---
 
-## Client Helper — `lib/auth-client.ts`
+## Client Helper — `services/auth-client.ts`
 
 Thin wrapper over `fetch` used on the client side for auth calls.
 
@@ -454,7 +454,7 @@ if (result.ok) {
 1. Create `app/api/<route>/route.ts`
 2. Export `GET` and/or `POST` handler functions
 3. Return `NextResponse.json(payload)` where `payload` matches `ApiResult<YourType>`
-4. Add the type to `lib/contracts/content.ts` (or a new contracts file)
+4. Add the type to `types/content.ts` (or a new types file)
 5. Document it in this file
 
 ---

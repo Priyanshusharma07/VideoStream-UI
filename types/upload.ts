@@ -29,4 +29,3 @@ export type CompleteUploadResponse = {
   videoId: string;
   status: "processing";
 };
-

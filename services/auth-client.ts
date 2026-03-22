@@ -6,8 +6,8 @@ import type {
   LoginResponse,
   SignupRequest,
   SignupResponse,
-} from "./contracts/auth";
-import { postApi } from "./api-client";
+} from "@/types/auth";
+import { postApi } from "@/services/api-client";
 
 export async function login(
   input: LoginRequest,

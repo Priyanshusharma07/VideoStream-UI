@@ -1,11 +1,11 @@
-import type { ApiResult } from "./contracts/api";
-import { postApi } from "./api-client";
+import type { ApiResult } from "@/types/api";
+import { postApi } from "@/services/api-client";
 import type {
   CompleteUploadRequest,
   CompleteUploadResponse,
   CreatePresignedUploadRequest,
   CreatePresignedUploadResponse,
-} from "./contracts/upload";
+} from "@/types/upload";
 
 const PRESIGN_PATH =
   process.env.NEXT_PUBLIC_UPLOAD_PRESIGN_PATH ?? "/uploads/presign";
@@ -29,4 +29,3 @@ export async function completeUpload(
     input,
   );
 }
-

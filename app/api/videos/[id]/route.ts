@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { ApiResult } from "@/lib/contracts/api";
-import type { VideoDetailsPayload } from "@/lib/contracts/content";
+import type { ApiResult } from "@/types/api";
+import type { VideoDetailsPayload } from "@/types/content";
 import { getDemoVideoDetails } from "@/lib/demo/content";
 
 export async function GET(

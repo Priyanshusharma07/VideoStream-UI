@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { UploadIcon, VideoIcon, CheckCircleIcon } from "@/components/icons";
 import { useToast } from "@/components/ui/ToastProvider";
-import { uploadVideoMultipart } from "@/lib/videos-client";
+import { uploadVideoMultipart } from "@/services/videos-client";
 
 type Visibility = "public" | "unlisted" | "private";
 type UploadStatus = "idle" | "uploading";

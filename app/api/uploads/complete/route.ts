@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import type { ApiResult } from "@/lib/contracts/api";
-import type { CompleteUploadResponse } from "@/lib/contracts/upload";
+import type { ApiResult } from "@/types/api";
+import type { CompleteUploadResponse } from "@/types/upload";
 
 export const runtime = "nodejs";
 

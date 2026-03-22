@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { PlayIcon } from "@/components/icons";
-import type { Video } from "@/lib/contracts/content";
+import type { Video } from "@/types/content";
 
 export function VideoThumb({
   video,
