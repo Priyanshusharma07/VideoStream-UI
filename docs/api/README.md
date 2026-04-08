@@ -96,6 +96,8 @@ TypeScript types live in `types/api.ts`, `types/auth.ts`, `types/content.ts`, an
 
 **Purpose:** Create a new account and immediately return tokens (auto-login on signup).
 
+> **Alias:** `POST /api/auth/register` (same behaviour) — supported so the frontend can keep using `/auth/register` when swapping to a real backend later.
+
 | Field      | Type   | Required | Rules |
 |------------|--------|----------|-------|
 | `name`     | string | ✅ | Min 2 characters |
@@ -232,7 +234,7 @@ type Video = {
 
 ### `GET /api/videos/:id`
 
-**Purpose:** Fetch full detail for a single video including description, tags, likes count, and live chat messages.
+**Purpose:** Fetch full detail for a single video including description, tags, likes count, chat messages, and playback info.
 
 **Path parameter**
 | Param | Type   | Description |
@@ -273,6 +275,10 @@ type Video = {
           "highlighted": true
         }
       ]
+    },
+    "playback": {
+      "status": "ready",
+      "hlsManifestPath": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
     }
   }
 }
@@ -280,6 +286,7 @@ type Video = {
 
 **Data types**
 ```ts
+// Full contract lives in `types/video.ts`.
 type MessageBadge = "mod" | "creator";   // or absent
 
 type ChatMessage = {
@@ -293,7 +300,48 @@ type ChatMessage = {
 > **Note:** The demo ignores the `id` and returns the same data for unknown IDs (falls back to `forYou[0]`).  
 > Production should return `404` for unknown IDs.
 
-**Used by:** `app/watch/[id]/page.tsx`
+**Used by:** `app/watch/[id]/page.tsx`, `app/videos/[id]/page.tsx`
+
+---
+
+### `GET /api/videos/:id/status`
+
+**Purpose:** Poll transcoding / readiness state for the player.
+
+**Success `200`**
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "v-1",
+    "status": "ready",
+    "hlsReady": true,
+    "hlsManifestPath": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  }
+}
+```
+
+---
+
+### `POST /api/videos/:id/view`
+
+**Purpose:** Record a view (fire-and-forget). Demo endpoint is a no-op.
+
+**Success `200`**
+```json
+{ "ok": true, "data": { "status": "ok" } }
+```
+
+---
+
+### `POST /api/videos/:id/like` / `POST /api/videos/:id/unlike`
+
+**Purpose:** Toggle like state. Demo returns a stable `likesLabel` string.
+
+**Success `200`**
+```json
+{ "ok": true, "data": { "likesLabel": "46K" } }
+```
 
 ---
 
@@ -428,6 +476,7 @@ All shared types are centralised in `types/`:
 | `api.ts` | `ApiError`, `ApiResult<T>` |
 | `auth.ts` | `LoginRequest`, `SignupRequest`, `ForgotPasswordRequest`, `AuthUser`, `LoginResponse`, `SignupResponse`, `ForgotPasswordResponse` |
 | `content.ts` | `Creator`, `Video`, `VideoKind`, `FeedPayload`, `VideoDetailsPayload`, `DashboardPayload` |
+| `video.ts` | `VideoCreator`, `VideoDetail`, `ChatMessage`, `WatchPagePayload`, `VideoStatusPayload` |
 
 ---
 

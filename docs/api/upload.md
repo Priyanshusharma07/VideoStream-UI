@@ -24,7 +24,8 @@ The access token is saved to localStorage on login in `streaming-ui/app/login/pa
 - `title` (string) ✅
 - `description` (string) ❌
 - `tags` (string[]) ❌ (sent as repeated `tags` fields)
-- `isPublic` (boolean) ❌ (sent as `"true"` / `"false"`, default backend behavior)
+- `videoExt` (string) ✅ (one of: `mp4`, `webm`, `mov`)
+- `isPublic` (boolean) ❌ (some NestJS validators require backend-side boolean conversion for multipart)
 
 **Response**
 ```json

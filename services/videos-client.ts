@@ -1,5 +1,5 @@
 import type { ApiResult } from "@/types/api";
-import { postApi } from "@/services/api-client";
+import { getApi, postApi } from "@/services/api-client";
 import { getAccessToken } from "@/lib/auth-session";
 import axios from "axios";
 
@@ -29,7 +29,7 @@ export type UploadVideoMultipartRequest = {
 };
 
 export type UploadVideoMultipartResponse = {
-  videoId: number;
+  videoId: string | number;
   status: "processing" | "ready";
 };
 
@@ -94,8 +94,41 @@ function authHeaders(): HeadersInit | null {
 
 function apiBase() {
   const raw = process.env.NEXT_PUBLIC_API_BASE?.trim();
-  if (!raw) return "https://api.yourdomain.com";
-  return raw.replace(/\/+$/, "");
+  return raw ? raw.replace(/\/+$/, "") : "";
+}
+
+function inferVideoExt(file: File): "mp4" | "webm" | "mov" | null {
+  const ext = file.name.split(".").pop()?.trim().toLowerCase() ?? "";
+  if (ext === "mp4" || ext === "webm" || ext === "mov") return ext;
+
+  const type = file.type.trim().toLowerCase();
+  if (type === "video/mp4") return "mp4";
+  if (type === "video/webm") return "webm";
+  if (type === "video/quicktime") return "mov";
+
+  return null;
+}
+
+function throwIfAborted(signal?: AbortSignal) {
+  if (!signal) return;
+  if (!signal.aborted) return;
+  throw new DOMException("Upload aborted", "AbortError");
+}
+
+async function sleep(ms: number, signal?: AbortSignal) {
+  throwIfAborted(signal);
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    if (!signal) return;
+    signal.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(timer);
+        reject(new DOMException("Upload aborted", "AbortError"));
+      },
+      { once: true },
+    );
+  });
 }
 
 export async function uploadVideoMultipart(
@@ -110,17 +143,69 @@ export async function uploadVideoMultipart(
   }
 
   const base = apiBase();
-  if (!base) throw new Error("Missing API base.");
+  // Demo mode: if no API base is configured, simulate an upload so the UI can be developed end-to-end.
+  if (!base) {
+    const videoExt = inferVideoExt(input.file);
+    if (!videoExt) {
+      return {
+        ok: false,
+        error: {
+          code: "validation_error",
+          message: "Unsupported video format. Please upload mp4, webm, or mov.",
+        },
+      };
+    }
+
+    input.onProgress?.(0);
+    const steps = [6, 18, 35, 58, 76, 92, 100];
+    for (const pct of steps) {
+      await sleep(140, input.signal);
+      input.onProgress?.(pct);
+    }
+
+    return {
+      ok: true,
+      data: { videoId: `v-upload-${crypto.randomUUID()}`, status: "processing" },
+    };
+  }
 
   const formData = new FormData();
   formData.append("file", input.file);
   formData.append("title", input.title);
   if (input.description) formData.append("description", input.description);
+  // IMPORTANT: many NestJS multipart setups give you a string when only one `tags` field is sent,
+  // which fails `@IsArray()`. To keep the payload an array, we duplicate the single tag.
   if (input.tags && input.tags.length > 0) {
-    for (const tag of input.tags) formData.append("tags", tag);
+    if (input.tags.length === 1) {
+      formData.append("tags", input.tags[0]);
+      formData.append("tags", input.tags[0]);
+    } else {
+      for (const tag of input.tags) formData.append("tags", tag);
+    }
   }
-  if (typeof input.isPublic === "boolean") {
-    formData.append("isPublic", String(input.isPublic));
+
+  // Some backends validate `videoExt` (e.g. mp4/webm/mov) even on multipart uploads.
+  const videoExt = inferVideoExt(input.file);
+  if (!videoExt) {
+    return {
+      ok: false,
+      error: {
+        code: "validation_error",
+        message: "Unsupported video format. Please upload mp4, webm, or mov.",
+      },
+    };
+  }
+  formData.append("videoExt", videoExt);
+
+  // NOTE: We intentionally do NOT send `isPublic` here.
+  // In many NestJS + multipart setups, `isPublic` arrives as a string and fails `@IsBoolean()`
+  // unless the backend enables implicit conversion or uses `@IsBooleanString()`.
+
+  if (process.env.NEXT_PUBLIC_API_DEBUG === "1") {
+    console.log("Uploading multipart fields:");
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value instanceof File ? `File(${value.name})` : value);
+    }
   }
 
   try {
@@ -150,8 +235,10 @@ export async function uploadVideoMultipart(
         : raw;
 
     const videoId = getNumber(payload, ["videoId", "id"]);
+    const videoIdStr = getString(payload, ["videoId", "id"]);
     const status = getString(payload, ["status"]);
-    if (!videoId || (status !== "processing" && status !== "ready")) {
+    const resolvedVideoId: string | number | null = videoId ?? videoIdStr;
+    if (!resolvedVideoId || (status !== "processing" && status !== "ready")) {
       return {
         ok: false,
         error: {
@@ -163,7 +250,10 @@ export async function uploadVideoMultipart(
 
     return {
       ok: true,
-      data: { videoId, status: status as UploadVideoMultipartResponse["status"] },
+      data: {
+        videoId: resolvedVideoId,
+        status: status as UploadVideoMultipartResponse["status"],
+      },
     };
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -171,10 +261,14 @@ export async function uploadVideoMultipart(
       if (status === 401) {
         return { ok: false, error: { code: "unauthorized", message: "Unauthorized" } };
       }
+      const data = err.response?.data as unknown;
+      const rawMessage = isRecord(data) ? data.message : null;
       const message =
-        typeof err.response?.data?.message === "string"
-          ? err.response.data.message
-          : err.message;
+        typeof rawMessage === "string"
+          ? rawMessage
+          : Array.isArray(rawMessage) && rawMessage.every((m) => typeof m === "string")
+            ? rawMessage.join(" ")
+            : err.message;
       return { ok: false, error: { code: "request_failed", message } };
     }
     const message = err instanceof Error ? err.message : "Upload failed";
@@ -217,7 +311,7 @@ export async function initiateVideoUpload(
 }
 
 export async function completeVideoUpload(
-  videoId: number,
+  videoId: string | number,
 ): Promise<ApiResult<unknown>> {
   const headers = authHeaders();
   if (!headers) {
@@ -228,8 +322,109 @@ export async function completeVideoUpload(
   }
 
   return postApi<Record<string, never>, unknown>(
-    `/videos/${videoId}/complete`,
+    `/videos/${encodeURIComponent(String(videoId))}/complete`,
     {},
     { headers },
   );
+}
+
+// ── Watch page ────────────────────────────────────────────────────────────────
+
+export type VideoCreator = {
+  id: number | string;
+  name: string;
+  avatarUrl: string | null;
+};
+
+export type VideoDetail = {
+  id: number | string;
+  title: string;
+  description: string;
+  tags: string[];
+  thumbnailUrl: string | null;
+  durationLabel?: string;
+  kind: "video" | "live";
+  category: string;
+  creator: VideoCreator;
+  viewsLabel: string;
+  uploadedLabel: string;
+  likesLabel: string;
+  status: string;
+};
+
+export type ChatMessage = {
+  id: string;
+  user: { name: string; badge?: "mod" | "creator" };
+  message: string;
+  highlighted?: boolean;
+};
+
+export type WatchPagePayload = {
+  video: VideoDetail;
+  chat: { viewersLabel: string; messages: ChatMessage[] };
+  playback: {
+    hlsManifestPath?: string | null;
+    signedUrl?: string | null;
+    status: string;
+    expiresIn?: number;
+  };
+};
+
+export type VideoStatusPayload = {
+  id: number | string;
+  status: string;
+  hlsReady: boolean;
+  hlsManifestPath: string | null;
+};
+
+function encodeVideoId(id: number | string) {
+  return encodeURIComponent(String(id));
+}
+
+const API_PREFIX_RAW = process.env.NEXT_PUBLIC_API_PREFIX ?? "/api";
+const API_PREFIX = API_PREFIX_RAW.startsWith("/") ? API_PREFIX_RAW : `/${API_PREFIX_RAW}`;
+
+function buildUrl(path: string): string {
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+
+  const base = apiBase();
+  if (base) return `${base}${normalized}`;
+
+  if (normalized === API_PREFIX || normalized.startsWith(`${API_PREFIX}/`)) {
+    return normalized;
+  }
+  return `${API_PREFIX}${normalized}`;
+}
+
+export async function getVideoDetails(
+  id: number | string,
+): Promise<ApiResult<WatchPagePayload>> {
+  return getApi<WatchPagePayload>(`/videos/${encodeVideoId(id)}`, { cache: "no-store" });
+}
+
+export async function pollVideoStatus(
+  id: number | string,
+): Promise<ApiResult<VideoStatusPayload>> {
+  return getApi<VideoStatusPayload>(`/videos/${encodeVideoId(id)}/status`, {
+    cache: "no-store",
+  });
+}
+
+export async function recordView(id: number | string): Promise<void> {
+  try {
+    await postApi<Record<string, never>, unknown>(
+      `/videos/${encodeVideoId(id)}/view`,
+      {},
+    );
+    return;
+  } catch {
+    // fall back to older implementation
+  }
+  const url = buildUrl(`/videos/${id}/view`);
+  try {
+    await fetch(url, { method: "POST", cache: "no-store" });
+  } catch {
+    // fire-and-forget — silently ignore failures
+  }
 }

@@ -68,6 +68,16 @@ export default function UploadPage() {
     if (isBusy) return;
     if (!file || !title.trim()) return;
 
+    if (visibility !== "public") {
+      toast.push({
+        variant: "error",
+        title: "Visibility not supported yet",
+        message:
+          "Backend currently validates multipart booleans strictly. Enable boolean conversion (or IsBooleanString) to support private/unlisted.",
+      });
+      return;
+    }
+
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -85,7 +95,6 @@ export default function UploadPage() {
         title: title.trim(),
         description: description.trim() ? description.trim() : undefined,
         tags: parsedTags.length > 0 ? parsedTags : undefined,
-        isPublic: visibility === "public",
         signal: controller.signal,
         onProgress: (p) => setProgress(p),
       });

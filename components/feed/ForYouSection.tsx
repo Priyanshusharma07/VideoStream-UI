@@ -45,16 +45,22 @@ export function ForYouSection({
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((v) => (
-          <Link key={v.id} href={`/videos/${v.id}`} className="group">
+          <Link key={v.id} href={`/watch/${v.id}`} className="group">
             <VideoThumb video={v} className="h-44" />
             <div className="mt-3 flex items-start gap-3">
-              <Image
-                src={v.creator.avatarUrl}
-                alt={v.creator.name}
-                width={32}
-                height={32}
-                className="mt-0.5 rounded-lg ring-1 ring-white/10"
-              />
+              {v.creator.avatarUrl ? (
+                <Image
+                  src={v.creator.avatarUrl}
+                  alt={v.creator.name}
+                  width={32}
+                  height={32}
+                  className="mt-0.5 shrink-0 rounded-lg ring-1 ring-white/10"
+                />
+              ) : (
+                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-violet-600 text-xs font-bold text-white ring-1 ring-white/10">
+                  {(v.creator.name ?? "?")[0].toUpperCase()}
+                </div>
+              )}
               <div className="min-w-0">
                 <div className="truncate text-sm font-semibold text-white/90 group-hover:text-white">
                   {v.title}

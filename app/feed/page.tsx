@@ -3,20 +3,14 @@ import Image from "next/image";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { AppTopbar } from "@/components/app/AppTopbar";
 import { ForYouSection } from "@/components/feed/ForYouSection";
+import { getApi } from "@/services/api-client";
 import type { FeedPayload } from "@/types/content";
 
-function backendBase() {
-  const raw = process.env.NEXT_PUBLIC_API_BASE?.trim();
-  return raw ? raw.replace(/\/+$/, "") : "https://api.yourdomain.com";
-}
+export const dynamic = "force-dynamic";
 
 function safeUrl(url: string | null | undefined, fallback: string) {
   const trimmed = typeof url === "string" ? url.trim() : "";
   return trimmed ? trimmed : fallback;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object";
 }
 
 function normalizeFeed(feed: FeedPayload): FeedPayload {
@@ -46,15 +40,9 @@ function normalizeFeed(feed: FeedPayload): FeedPayload {
 }
 
 export default async function FeedPage() {
-  const base = backendBase();
-  const res = await fetch(`${base}/feed`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load feed (HTTP ${res.status}).`);
-  const raw = (await res.json().catch(() => null)) as unknown;
-  const payload =
-    isRecord(raw) && typeof raw.ok === "boolean" && raw.ok
-      ? (raw.data as unknown)
-      : raw;
-  const feed = normalizeFeed(payload as FeedPayload);
+  const result = await getApi<FeedPayload>("/feed", { cache: "no-store" });
+  if (!result.ok) throw new Error(result.error.message);
+  const feed = normalizeFeed(result.data);
 
   return (
     <div className="min-h-screen bg-[#070A12] text-white">
@@ -90,7 +78,7 @@ export default async function FeedPage() {
               {feed.trending.map((v) => (
                 <Link
                   key={v.id}
-                  href={`/videos/${v.id}`}
+                  href={`/watch/${v.id}`}
                   className="w-[260px] shrink-0"
                 >
                   <div className="relative overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">

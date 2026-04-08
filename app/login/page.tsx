@@ -63,6 +63,7 @@ export default function LoginPage() {
         refreshToken: result.data.refreshToken,
         expiresAt: result.data.expiresAt,
       });
+
       setSuccess(`Signed in as ${result.data.user.email}.`);
       toast.push({ variant: "success", title: "Signed in", message: "Welcome back!" });
       router.push("/feed");

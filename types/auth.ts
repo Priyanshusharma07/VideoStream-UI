@@ -23,7 +23,9 @@ export type AuthUser = {
 };
 
 export type LoginResponse = {
+  // Backend may return either camelCase or snake_case.
   accessToken: string;
+  access_token?: string;
   refreshToken: string;
   expiresAt: string;
   user: AuthUser;
