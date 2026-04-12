@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { ApiResult } from "@/types/api";
-import type { WatchPagePayload } from "@/types/video";
+import type { WatchPagePayload } from "@/types/watch";
 import { getDemoVideoDetails } from "@/lib/demo/content";
 
 const DEMO_HLS_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";

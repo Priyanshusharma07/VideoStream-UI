@@ -286,7 +286,7 @@ type Video = {
 
 **Data types**
 ```ts
-// Full contract lives in `types/video.ts`.
+// Full contract lives in `types/watch.ts`.
 type MessageBadge = "mod" | "creator";   // or absent
 
 type ChatMessage = {
@@ -476,7 +476,7 @@ All shared types are centralised in `types/`:
 | `api.ts` | `ApiError`, `ApiResult<T>` |
 | `auth.ts` | `LoginRequest`, `SignupRequest`, `ForgotPasswordRequest`, `AuthUser`, `LoginResponse`, `SignupResponse`, `ForgotPasswordResponse` |
 | `content.ts` | `Creator`, `Video`, `VideoKind`, `FeedPayload`, `VideoDetailsPayload`, `DashboardPayload` |
-| `video.ts` | `VideoCreator`, `VideoDetail`, `ChatMessage`, `WatchPagePayload`, `VideoStatusPayload` |
+| `watch.ts` | `VideoCreator`, `VideoDetail`, `ChatMessage`, `WatchPagePayload`, `VideoStatusPayload` |
 
 ---
 

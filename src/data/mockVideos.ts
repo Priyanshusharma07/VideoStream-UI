@@ -2,6 +2,34 @@ import type { Video } from "@/src/types/video";
 
 export const mockVideos: Video[] = [
   {
+    id: "live-coding-nextjs",
+    title: "LIVE: Building a Streaming UI in Next.js",
+    description:
+      "Join the live session where we build a streaming UI end-to-end, discuss architecture, and answer questions.",
+    thumbnailUrl: "https://i.ytimg.com/vi/2kzVvQF2m6g/maxresdefault.jpg",
+    videoUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    duration: "LIVE",
+    views: 12_480,
+    createdAt: "2026-04-08T14:00:00.000Z",
+    channelName: "StreamHub Live",
+    category: "Tech",
+    isPremium: false,
+  },
+  {
+    id: "live-music-chill",
+    title: "LIVE: Chill Beats Radio (Demo Stream)",
+    description:
+      "A demo live stream for UI development. This plays an HLS sample stream using hls.js on supported browsers.",
+    thumbnailUrl: "https://i.ytimg.com/vi/jfKfPfyJRdk/maxresdefault.jpg",
+    videoUrl: "https://test-streams.mux.dev/test_001/stream.m3u8",
+    duration: "LIVE",
+    views: 98_210,
+    createdAt: "2026-04-08T16:30:00.000Z",
+    channelName: "Chill Station Live",
+    category: "Entertainment",
+    isPremium: true,
+  },
+  {
     id: "edu-nextjs-app-router",
     title: "Next.js App Router Crash Course (2026 Edition)",
     description:
@@ -33,9 +61,9 @@ export const mockVideos: Video[] = [
   },
   {
     id: "entertainment-lofi-night",
-    title: "Late Night Lo‑Fi Beats (1 Hour Mix)",
+    title: "Late Night Lo-Fi Beats (1 Hour Mix)",
     description:
-      "Relaxing lo‑fi playlist for coding sessions. Grab your headphones and enjoy the vibe.",
+      "Relaxing lo-fi playlist for coding sessions. Grab your headphones and enjoy the vibe.",
     thumbnailUrl: "https://i.ytimg.com/vi/5qap5aO4i9A/maxresdefault.jpg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
@@ -156,4 +184,3 @@ export const mockVideos: Video[] = [
 export const videoCategories = Array.from(
   new Set(mockVideos.map((v) => v.category)),
 );
-

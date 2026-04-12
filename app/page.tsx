@@ -1,44 +1,75 @@
 import Link from "next/link";
-import { HomeHeader } from "@/components/home/HomeHeader";
-import { TrendingCategories } from "@/components/home/TrendingCategories";
-import { PlayIcon } from "@/components/icons";
-import { HOME_CATEGORIES } from "@/lib/home-data";
-import { HeroSearch } from "@/components/home/HeroSearch";
+import { getVideos } from "@/src/services/videoService";
+import { videoCategories } from "@/src/data/mockVideos";
+import { VideoCard } from "@/src/components/videos/VideoCard";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const videos = await getVideos();
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#070A12] text-white">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-32 -top-28 h-[28rem] w-[28rem] rounded-full bg-emerald-400/10 blur-3xl" />
         <div className="absolute right-[-8rem] top-[-6rem] h-[32rem] w-[32rem] rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="absolute left-1/2 top-32 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-purple-600/12 blur-3xl" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/60" />
       </div>
 
-      <HomeHeader />
-
-      <main className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 pb-12 pt-12">
-        <Link
-          href="/watch/v-1"
-          aria-label="Play trailer"
-          className="group relative mb-10 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur transition hover:bg-white/15 hover:ring-white/25"
-        >
-          <span className="absolute inset-0 rounded-full shadow-[0_0_0_6px_rgba(255,255,255,0.04)] transition group-hover:shadow-[0_0_0_10px_rgba(255,255,255,0.05)]" />
-          <PlayIcon className="h-6 w-6 translate-x-[1px] text-white/85" />
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+        <Link href="/" className="text-sm font-extrabold tracking-[0.22em] text-white/90">
+          STREAMHUB
         </Link>
+        <nav className="flex items-center gap-4 text-sm text-white/60">
+          <Link href="/feed" className="hover:text-white">
+            Feed
+          </Link>
+          <Link href="/live" className="hover:text-white">
+            Live
+          </Link>
+          <Link href="/upload" className="hover:text-white">
+            Upload
+          </Link>
+          <Link href="/login" className="hover:text-white">
+            Login
+          </Link>
+          <Link href="/qa" className="hover:text-white">
+            QA
+          </Link>
+        </nav>
+      </header>
 
-        <h1 className="text-center text-5xl font-extrabold tracking-[0.18em] sm:text-6xl md:text-7xl">
-          <span className="bg-gradient-to-r from-cyan-300 via-sky-400 to-purple-500 bg-clip-text text-transparent">
-            STREAM LIMITLESS
-          </span>
-        </h1>
+      <main className="mx-auto w-full max-w-6xl px-6 pb-14 pt-4">
+        <div className="rounded-3xl bg-black/35 p-6 ring-1 ring-white/10 backdrop-blur">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-white/90">
+                Browse Videos
+              </h1>
+              <p className="mt-1 text-sm text-white/50">
+                Demo-only content powered by a typed mock data layer (no backend).
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-white/55">
+              {videoCategories.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </div>
 
-        <div className="mt-10 w-full max-w-xl">
-          <HeroSearch />
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {videos.map((v) => (
+              <VideoCard key={v.id} video={v} />
+            ))}
+          </div>
         </div>
       </main>
-
-      <TrendingCategories categories={HOME_CATEGORIES} />
     </div>
   );
 }

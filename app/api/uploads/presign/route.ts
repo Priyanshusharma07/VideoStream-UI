@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { ApiResult } from "@/types/api";
 import type {
   CreatePresignedUploadResponse,
@@ -35,22 +33,10 @@ function ensurePrefix(prefix: string) {
 }
 
 export async function POST(req: Request) {
-  const bucket = process.env.AWS_S3_BUCKET?.trim();
-  const region = process.env.AWS_REGION?.trim();
   const prefix = ensurePrefix(process.env.AWS_S3_PREFIX ?? "uploads");
-  const expiresInSeconds = Number(process.env.AWS_S3_PRESIGN_EXPIRES_SECONDS ?? "600");
-
-  if (!bucket || !region) {
-    const payload: ApiResult<CreatePresignedUploadResponse> = {
-      ok: false,
-      error: {
-        code: "misconfigured",
-        message:
-          "Missing server env. Set AWS_S3_BUCKET and AWS_REGION (and AWS credentials).",
-      },
-    };
-    return json(payload, 500);
-  }
+  const expiresInSeconds = Number(
+    process.env.AWS_S3_PRESIGN_EXPIRES_SECONDS ?? "600",
+  );
 
   const body = (await req.json().catch(() => null)) as unknown;
   const record = isRecord(body) ? body : null;
@@ -86,17 +72,9 @@ export async function POST(req: Request) {
   const safeName = sanitizeFilename(filename);
   const key = `${prefix}${crypto.randomUUID()}-${safeName}`;
 
-  const client = new S3Client({ region });
-  const command = new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    ContentType: contentType,
-    ContentLength: size,
-  });
-
-  const uploadUrl = await getSignedUrl(client, command, {
-    expiresIn: Number.isFinite(expiresInSeconds) && expiresInSeconds > 0 ? expiresInSeconds : 600,
-  });
+  // Demo-only response (no real backend / S3 required).
+  // When you wire a real backend, replace this with a server-side call that generates a presigned URL.
+  const uploadUrl = `https://example.invalid/presigned-upload/${encodeURIComponent(key)}`;
 
   const expiresAt = new Date(
     Date.now() +
@@ -110,8 +88,8 @@ export async function POST(req: Request) {
     uploadUrl,
     key,
     expiresAt,
-    bucket,
-    region,
+    bucket: "demo",
+    region: "demo",
   };
 
   const payload: ApiResult<CreatePresignedUploadResponse> = { ok: true, data: response };

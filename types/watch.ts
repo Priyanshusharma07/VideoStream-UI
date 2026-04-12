@@ -44,4 +44,3 @@ export type VideoStatusPayload = {
   hlsReady: boolean;
   hlsManifestPath: string | null;
 };
-

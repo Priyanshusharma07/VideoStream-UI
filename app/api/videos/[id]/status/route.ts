@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { ApiResult } from "@/types/api";
-import type { VideoStatusPayload } from "@/types/video";
+import type { VideoStatusPayload } from "@/types/watch";
 
 const DEMO_HLS_URL = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
 
@@ -22,4 +22,3 @@ export async function GET(
 
   return NextResponse.json(payload);
 }
-

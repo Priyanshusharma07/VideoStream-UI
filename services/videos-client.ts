@@ -1,6 +1,7 @@
 import type { ApiResult } from "@/types/api";
 import { getApi, postApi } from "@/services/api-client";
 import { getAccessToken } from "@/lib/auth-session";
+import type { VideoStatusPayload, WatchPagePayload } from "@/types/watch";
 import axios from "axios";
 
 export type InitiateVideoUploadRequest = {
@@ -330,71 +331,8 @@ export async function completeVideoUpload(
 
 // ── Watch page ────────────────────────────────────────────────────────────────
 
-export type VideoCreator = {
-  id: number | string;
-  name: string;
-  avatarUrl: string | null;
-};
-
-export type VideoDetail = {
-  id: number | string;
-  title: string;
-  description: string;
-  tags: string[];
-  thumbnailUrl: string | null;
-  durationLabel?: string;
-  kind: "video" | "live";
-  category: string;
-  creator: VideoCreator;
-  viewsLabel: string;
-  uploadedLabel: string;
-  likesLabel: string;
-  status: string;
-};
-
-export type ChatMessage = {
-  id: string;
-  user: { name: string; badge?: "mod" | "creator" };
-  message: string;
-  highlighted?: boolean;
-};
-
-export type WatchPagePayload = {
-  video: VideoDetail;
-  chat: { viewersLabel: string; messages: ChatMessage[] };
-  playback: {
-    hlsManifestPath?: string | null;
-    signedUrl?: string | null;
-    status: string;
-    expiresIn?: number;
-  };
-};
-
-export type VideoStatusPayload = {
-  id: number | string;
-  status: string;
-  hlsReady: boolean;
-  hlsManifestPath: string | null;
-};
-
 function encodeVideoId(id: number | string) {
   return encodeURIComponent(String(id));
-}
-
-const API_PREFIX_RAW = process.env.NEXT_PUBLIC_API_PREFIX ?? "/api";
-const API_PREFIX = API_PREFIX_RAW.startsWith("/") ? API_PREFIX_RAW : `/${API_PREFIX_RAW}`;
-
-function buildUrl(path: string): string {
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-
-  const base = apiBase();
-  if (base) return `${base}${normalized}`;
-
-  if (normalized === API_PREFIX || normalized.startsWith(`${API_PREFIX}/`)) {
-    return normalized;
-  }
-  return `${API_PREFIX}${normalized}`;
 }
 
 export async function getVideoDetails(
@@ -417,13 +355,6 @@ export async function recordView(id: number | string): Promise<void> {
       `/videos/${encodeVideoId(id)}/view`,
       {},
     );
-    return;
-  } catch {
-    // fall back to older implementation
-  }
-  const url = buildUrl(`/videos/${id}/view`);
-  try {
-    await fetch(url, { method: "POST", cache: "no-store" });
   } catch {
     // fire-and-forget — silently ignore failures
   }
