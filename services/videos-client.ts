@@ -359,3 +359,6 @@ export async function recordView(id: number | string): Promise<void> {
     // fire-and-forget — silently ignore failures
   }
 }
+
+// NOTE: The presigned URL upload flow (getUploadUrl, uploadVideo, confirmUpload)
+// lives in @/services/video.service.ts — use that for all upload operations.
