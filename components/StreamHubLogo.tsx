@@ -1,10 +1,9 @@
 import Link from "next/link";
 
 /**
- * StreamHub Logo — full wordmark with icon mark
- * size: "sm" | "md" (default md)
+ * CineView Logo — full wordmark with icon mark
  */
-export function StreamHubLogo({
+export function CineViewLogo({
   href = "/feed",
   size = "md",
 }: {
@@ -16,43 +15,26 @@ export function StreamHubLogo({
 
   return (
     <Link href={href} className="group flex items-center gap-2.5 select-none">
-      {/* Icon mark — hexagonal play button */}
+      {/* Icon mark */}
       <div
-        className={`${iconSize} relative flex shrink-0 items-center justify-center`}
+        className={`${iconSize} relative flex shrink-0 items-center justify-center bg-primary rounded-lg shadow-lg shadow-primary/20`}
         aria-hidden="true"
       >
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-          {/* Glow blur layer */}
-          <defs>
-            <radialGradient id="sh-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
-            </radialGradient>
-            <linearGradient id="sh-bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#0ea5e9" />
-              <stop offset="100%" stopColor="#6366f1" />
-            </linearGradient>
-          </defs>
-          {/* Background pill */}
-          <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#sh-bg)" />
-          {/* Subtle inner glow */}
-          <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#sh-glow)" />
-          {/* Play triangle */}
-          <path d="M13 10.5v11a1 1 0 0 0 1.53.848l9-5.5a1 1 0 0 0 0-1.696l-9-5.5A1 1 0 0 0 13 10.5Z" fill="white" fillOpacity="0.95" />
-        </svg>
+        <span className="material-symbols-outlined text-black font-bold text-xl">play_arrow</span>
       </div>
 
       {/* Wordmark */}
       <div className="flex flex-col leading-none">
         <span
-          className={`${textSize} font-bold tracking-tight text-white group-hover:text-white/90 transition-colors`}
+          className={`${textSize} font-black tracking-tight text-white group-hover:text-white/90 transition-colors uppercase`}
         >
-          Stream<span className="text-sky-400">Hub</span>
+          Cine<span className="text-primary">View</span>
         </span>
-        <span className="text-[9px] font-semibold tracking-[0.25em] text-white/30 uppercase mt-px">
-          Platform
+        <span className="text-[9px] font-black tracking-[0.3em] text-white/20 uppercase mt-px">
+          Cinematic
         </span>
       </div>
     </Link>
   );
 }
+

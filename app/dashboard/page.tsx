@@ -1,154 +1,154 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { StreamHubLogo } from "@/components/StreamHubLogo";
-import { PlusIcon } from "@/components/icons";
-import { getDemoDashboard } from "@/lib/demo/content";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { getDashboardData } from "@/services/dashboard-client";
+import type { DashboardPayload } from "@/types/content";
 
-export default function DashboardPage() {
-  const dashboard = getDemoDashboard();
+function DashboardContent() {
+  const router = useRouter();
+  const [dashboard, setDashboard] = useState<DashboardPayload | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDashboardData().then((res) => {
+      if (!res.ok) {
+        if (res.error.code === "unauthorized") {
+          router.push("/login");
+        }
+        setLoading(false);
+        return;
+      }
+      setDashboard(res.data);
+      setLoading(false);
+    });
+  }, [router]);
+
+  if (loading || !dashboard) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-white/20 font-black uppercase tracking-[0.3em] text-xs">Synchronizing Workspace...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#070A12] text-white">
-      <header className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-6 pt-6">
-        <div className="flex items-center gap-6">
-          <StreamHubLogo />
-          <nav className="hidden items-center gap-5 text-sm text-white/65 md:flex">
-            <Link href="/" className="hover:text-white">
-              Home
-            </Link>
-            <Link href="/dashboard" className="hover:text-white">
-              Dashboard
-            </Link>
-            <Link href="/feed" className="hover:text-white">
-              Library
-            </Link>
-            <Link href="/explore" className="hover:text-white">
-              Community
-            </Link>
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden rounded-2xl bg-white/5 px-4 py-2 text-xs text-white/55 ring-1 ring-white/10 md:block">
-            Search content...
-          </div>
-          <Image
-            src={dashboard.user.avatarUrl}
-            alt={dashboard.user.name}
-            width={36}
-            height={36}
-            className="rounded-xl ring-1 ring-white/10"
-          />
-        </div>
+    <div className="py-12 px-[5vw]">
+      {/* Header Section */}
+      <header className="mb-12">
+        <h1 className="text-4xl font-black text-white tracking-tight">Creator Hub</h1>
+        <p className="mt-2 text-white/50 font-medium max-w-2xl">
+          Manage your cinematic vision, track your audience impact, and optimize your creative workflow from one immersive interface.
+        </p>
       </header>
 
-      <main className="mx-auto grid w-full max-w-[1200px] gap-6 px-6 pb-14 pt-8 lg:grid-cols-[320px_1fr]">
-        <aside className="rounded-3xl bg-black/35 p-6 ring-1 ring-white/10 backdrop-blur">
-          <div className="flex items-start gap-4">
-            <Image
-              src={dashboard.user.avatarUrl}
-              alt={dashboard.user.name}
-              width={56}
-              height={56}
-              className="rounded-2xl ring-1 ring-white/10"
-            />
-            <div className="min-w-0">
-              <div className="truncate text-lg font-semibold text-white/90">
-                {dashboard.user.name}
-              </div>
-              <div className="text-sm text-white/45">{dashboard.user.handle}</div>
-            </div>
+      {/* Overview Section: Stats Bento Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20">
+        {/* Main Stat (Views) */}
+        <div className="glass-panel p-8 rounded-[2rem] md:col-span-2 flex flex-col justify-between group hover:border-primary/40 transition-all cursor-pointer">
+          <div>
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4 block">Performance Peak</span>
+            <h3 className="text-5xl font-black text-white tracking-tighter">{dashboard.stats.find(s => s.id === 'views')?.value || '0'}</h3>
+            <p className="text-sm font-bold text-primary mt-2">{dashboard.stats.find(s => s.id === 'views')?.deltaLabel || '+0%'}</p>
           </div>
+          <div className="mt-12 flex items-end gap-1.5 h-24">
+            <div className="bg-primary/10 w-full h-[40%] rounded-xl group-hover:bg-primary/20 transition-all"></div>
+            <div className="bg-primary/10 w-full h-[60%] rounded-xl group-hover:bg-primary/20 transition-all"></div>
+            <div className="bg-primary/10 w-full h-[55%] rounded-xl group-hover:bg-primary/20 transition-all"></div>
+            <div className="bg-primary/10 w-full h-[80%] rounded-xl group-hover:bg-primary/20 transition-all"></div>
+            <div className="bg-primary w-full h-[95%] rounded-xl shadow-[0_0_20px_rgba(179,197,255,0.4)] transition-all"></div>
+            <div className="bg-primary/10 w-full h-[70%] rounded-xl group-hover:bg-primary/20 transition-all"></div>
+          </div>
+        </div>
 
-          <Link
-            href="/upload"
-            className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-500 text-sm font-semibold text-black hover:bg-sky-400"
-          >
-            <PlusIcon className="h-5 w-5" />
-            Upload Video
+        {/* Subscribers */}
+        <div className="glass-panel p-8 rounded-[2rem] flex flex-col justify-between hover:border-white/20 transition-all cursor-pointer">
+          <div>
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 mb-6">
+              <span className="material-symbols-outlined">group</span>
+            </div>
+            <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Subscribers</p>
+            <h3 className="text-3xl font-black text-white mt-1 tracking-tight">{dashboard.stats.find(s => s.id === 'subscribers')?.value || '0'}</h3>
+          </div>
+          <div className="w-full bg-white/5 h-1.5 rounded-full mt-10 overflow-hidden border border-white/5">
+            <div className="bg-white/40 h-full w-[72%] shadow-[0_0_10px_rgba(255,255,255,0.2)]"></div>
+          </div>
+        </div>
+
+        {/* Est. Revenue */}
+        <div className="glass-panel p-8 rounded-[2rem] flex flex-col justify-between hover:border-secondary/40 transition-all cursor-pointer">
+          <div>
+            <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary mb-6">
+              <span className="material-symbols-outlined">monetization_on</span>
+            </div>
+            <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Est. Revenue</p>
+            <h3 className="text-3xl font-black text-white mt-1 tracking-tight">{dashboard.stats.find(s => s.id === 'revenue')?.value || '$0.00'}</h3>
+          </div>
+          <div className="flex items-center gap-2 mt-10">
+            <span className="material-symbols-outlined text-secondary text-sm">trending_up</span>
+            <span className="text-xs font-black text-secondary uppercase tracking-widest">{dashboard.stats.find(s => s.id === 'revenue')?.deltaLabel || '+0%'}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Projects Section */}
+      <section>
+        <div className="flex justify-between items-end mb-10">
+          <div>
+            <h2 className="text-2xl font-black text-white tracking-tight">Recent Projects</h2>
+            <p className="mt-1 text-sm text-white/40 font-medium">Your latest cinematic uploads and their engagement metrics.</p>
+          </div>
+          <Link href="/upload" className="bg-primary text-black font-black px-8 py-3 rounded-2xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 text-sm">
+            <span className="material-symbols-outlined text-sm font-black">add_circle</span>
+            Upload New
           </Link>
-
-          <div className="mt-8">
-            <div className="text-[10px] font-semibold tracking-[0.22em] text-white/35">
-              SUBSCRIPTION
-            </div>
-            <div className="mt-3 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div className="text-sm font-semibold text-white/90">
-                {dashboard.user.planName}
-              </div>
-              <div className="mt-2 text-xs text-white/45">
-                Renews Oct 12, 2026
-              </div>
-              <Link
-                href="/billing"
-                className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white/80 ring-1 ring-white/10 hover:bg-white/15"
-              >
-                Manage Billing
-              </Link>
-            </div>
-          </div>
-        </aside>
-
-        <section className="space-y-6">
-          <div className="grid gap-5 md:grid-cols-2">
-            {dashboard.stats.map((s) => (
-              <div
-                key={s.id}
-                className={[
-                  "rounded-3xl p-6 text-white ring-1 ring-white/10",
-                  s.id === "views"
-                    ? "bg-gradient-to-r from-sky-500/90 to-blue-600/90"
-                    : "bg-gradient-to-r from-indigo-600/90 to-purple-600/90",
-                ].join(" ")}
-              >
-                <div className="text-xs text-white/80">{s.label}</div>
-                <div className="mt-2 text-3xl font-extrabold">{s.value}</div>
-                <div className="mt-2 text-xs text-white/80">{s.deltaLabel}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-3xl bg-black/35 p-6 ring-1 ring-white/10 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div className="text-lg font-semibold text-white/90">
-                Recent Watch History
-              </div>
-              <Link href="/feed" className="text-xs text-cyan-300 hover:underline">
-                View All
-              </Link>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {dashboard.recentHistory.map((h) => (
-                <div
-                  key={h.id}
-                  className="flex items-center gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10"
-                >
-                  <Image
-                    src={h.thumbnailUrl}
-                    alt={h.title}
-                    width={120}
-                    height={68}
-                    className="h-[68px] w-[120px] rounded-xl object-cover"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold text-white/90">
-                      {h.title}
-                    </div>
-                    <div className="mt-1 text-xs text-white/45">{h.meta}</div>
-                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                      <div
-                        className="h-full rounded-full bg-purple-400"
-                        style={{ width: `${Math.round(h.progress * 100)}%` }}
-                      />
-                    </div>
-                  </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {dashboard.recentHistory.map((h) => (
+            <Link key={h.id} href={`/watch/${h.id}`} className="group cursor-pointer">
+              <div className="relative aspect-video rounded-3xl overflow-hidden glass-card mb-4 group-hover:border-primary/40 transition-all">
+                <Image 
+                  src={h.thumbnailUrl || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"} 
+                  alt={h.title} 
+                  fill 
+                  className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                  <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">4K MASTER</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+                  <div className="h-full bg-primary shadow-[0_0_10px_rgba(179,197,255,0.8)]" style={{ width: `${Math.round(h.progress * 100)}%` }}></div>
+                </div>
+              </div>
+              <h4 className="text-lg font-bold text-white group-hover:text-primary transition-colors line-clamp-1 leading-tight">{h.title}</h4>
+              <div className="flex items-center gap-2 mt-2 text-white/40 text-[11px] font-black uppercase tracking-widest">
+                <span className="material-symbols-outlined text-xs">visibility</span>
+                {h.meta}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[80vh] items-center justify-center">
+        <p className="text-white/20 font-black uppercase tracking-[0.3em] text-xs">Loading Hub...</p>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+

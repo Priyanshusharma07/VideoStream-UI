@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { StreamHubLogo } from "@/components/StreamHubLogo";
+import { CineViewLogo } from "@/components/StreamHubLogo";
 import { MailIcon } from "@/components/icons";
 import { forgotPassword } from "@/services/auth-client";
 
@@ -23,61 +23,63 @@ export default function ForgotPasswordPage() {
         setError(result.error?.message ?? "Request failed.");
         return;
       }
-      setMessage("If that email exists, we sent a reset link.");
+      setMessage("Check your inbox. If the account exists, a link is on its way.");
     });
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#070A12] px-5 py-12 text-white">
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
+      {/* Background Cinematic Glows */}
+      <div className="absolute inset-0 -z-10 bg-[#080a0f]">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px]" />
+      </div>
 
-      {/* Background Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,255,200,0.15),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(140,0,255,0.15),transparent_40%)]" />
-
-      <div className="relative z-10 w-full max-w-md">
-
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="mb-8 flex justify-center">
-          <StreamHubLogo />
+        <div className="mb-12 flex justify-center transform hover:scale-105 transition-transform duration-500">
+          <CineViewLogo />
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-8 backdrop-blur-xl shadow-2xl">
+        <div className="glass-panel p-10 rounded-[2.5rem] border-white/5 shadow-2xl">
+          <header className="mb-10">
+            <h1 className="text-3xl font-black text-white tracking-tight mb-2">
+              Lost access?
+            </h1>
+            <p className="text-sm text-white/40 font-medium">
+              No worries. Enter your email and we'll help you return to the big screen.
+            </p>
+          </header>
 
-          <h1 className="text-center text-3xl font-bold tracking-widest">
-            RESET PASSWORD
-          </h1>
-
-          <p className="mt-2 text-center text-sm text-white/50">
-            Enter the email associated with your account and we&apos;ll send you a reset link.
-          </p>
-
-          <form onSubmit={onSubmit} className="mt-8 space-y-5">
-
-            <div>
-              <label className="mb-2 block text-xs text-white/60">
-                EMAIL ADDRESS
+          <form onSubmit={onSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">
+                Account Email
               </label>
-
-              <div className="flex items-center rounded-lg bg-white/5 px-3 ring-1 ring-white/10 focus-within:ring-orange-500/60">
-                <MailIcon className="mr-2 h-4 w-4 text-white/40" />
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors">
+                  <MailIcon className="h-5 w-5" />
+                </div>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  placeholder="e.g., alex@example.com"
-                  className="w-full bg-transparent py-3 text-sm outline-none placeholder:text-white/40"
+                  placeholder="name@example.com"
+                  required
+                  className="w-full h-14 bg-white/5 border border-white/5 rounded-2xl pl-12 pr-4 text-white text-sm font-medium outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-[11px] font-black text-red-400 uppercase tracking-widest text-center">
                 {error}
               </div>
             )}
 
             {message && (
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 text-[11px] font-black text-primary uppercase tracking-widest text-center">
                 {message}
               </div>
             )}
@@ -85,20 +87,23 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#FF6A00] text-sm font-semibold text-white transition hover:bg-[#ff7b1f] disabled:opacity-60"
+              className="w-full h-14 bg-white text-black font-black text-sm rounded-2xl hover:brightness-90 transition-all disabled:opacity-50 shadow-lg shadow-white/5"
             >
-              {isPending ? "Sending..." : "Send Reset Link →"}
+              {isPending ? "SENDING..." : "RECOVER ACCOUNT"}
             </button>
 
-            <p className="text-center text-sm text-white/50">
-              <Link href="/login" className="text-orange-400 hover:underline">
-                ← Back to Login
+            <div className="pt-4 text-center">
+              <Link 
+                href="/login" 
+                className="text-[10px] font-black text-white/30 hover:text-primary uppercase tracking-[0.2em] transition-all"
+              >
+                Back to Login
               </Link>
-            </p>
-
+            </div>
           </form>
         </div>
       </div>
     </div>
   );
 }
+

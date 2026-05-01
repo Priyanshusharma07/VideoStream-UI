@@ -1,6 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { StreamHubLogo } from "@/components/StreamHubLogo";
-import { CheckCircleIcon, CreditCardIcon, StarIcon } from "@/components/icons";
+import { useToast } from "@/components/ui/ToastProvider";
 
 const PLANS = [
   {
@@ -10,14 +11,13 @@ const PLANS = [
     period: "forever",
     current: false,
     features: ["720p streaming", "5 GB storage", "Ad-supported", "Community support"],
-    gradient: "from-white/5 to-white/3",
-    badge: null,
+    color: "white",
   },
   {
     id: "pro",
-    name: "StreamHub Pro",
+    name: "CineGlas Pro",
     price: "$9",
-    period: "/ month",
+    period: "/ mo",
     current: true,
     features: [
       "4K + HDR streaming",
@@ -26,14 +26,14 @@ const PLANS = [
       "Priority support",
       "Custom channel branding",
     ],
-    gradient: "from-sky-500/20 via-indigo-500/10 to-purple-500/10",
+    color: "primary",
     badge: "Current Plan",
   },
   {
     id: "creator",
     name: "Creator Studio",
     price: "$29",
-    period: "/ month",
+    period: "/ mo",
     current: false,
     features: [
       "Everything in Pro",
@@ -41,9 +41,8 @@ const PLANS = [
       "Analytics dashboard",
       "Monetisation tools",
       "API access",
-      "Dedicated account manager",
     ],
-    gradient: "from-purple-500/20 via-pink-500/10 to-orange-500/10",
+    color: "secondary",
     badge: "Best Value",
   },
 ];
@@ -55,183 +54,170 @@ const INVOICES = [
 ];
 
 export default function BillingPage() {
+  const toast = useToast();
+
+  const handleAction = (action: string) => {
+    toast.push({
+      variant: "info",
+      title: "Billing Action",
+      message: `${action} is coming soon!`,
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-[#070A12] px-6 py-10 text-white">
-      {/* Background glows */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute left-1/4 top-0 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-sky-500/10 blur-3xl" />
-        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-purple-600/10 blur-3xl" />
-      </div>
-
-      <div className="mx-auto w-full max-w-4xl">
-        {/* Header */}
-        <div className="mb-10 flex items-center justify-between">
-          <StreamHubLogo />
-          <Link href="/dashboard" className="text-sm text-white/50 hover:text-white">
-            ← Dashboard
-          </Link>
+    <div className="py-12 px-[5vw] max-w-5xl mx-auto">
+      {/* Header */}
+      <header className="mb-12 flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
+            <span className="material-symbols-outlined text-4xl text-primary">payments</span>
+            Billing
+          </h1>
+          <p className="mt-2 text-white/50 font-medium">Manage your cinematic subscription and invoices.</p>
         </div>
+      </header>
 
-        <h1 className="text-2xl font-semibold">Billing &amp; Subscription</h1>
-        <p className="mt-1 text-sm text-white/50">
-          Manage your plan, payment method, and billing history.
-        </p>
-
-        {/* Plans */}
-        <section className="mt-8">
-          <div className="text-xs font-semibold tracking-[0.22em] text-white/35 mb-4">
-            PLANS
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.id}
-                className={[
-                  "relative rounded-3xl p-6 ring-1 transition",
-                  plan.current
-                    ? "bg-gradient-to-br " + plan.gradient + " ring-sky-500/30"
-                    : "bg-gradient-to-br " + plan.gradient + " ring-white/10",
-                ].join(" ")}
-              >
-                {plan.badge && (
-                  <span className={[
-                    "absolute -top-3 left-5 rounded-full px-3 py-0.5 text-[10px] font-bold tracking-[0.18em]",
-                    plan.current
-                      ? "bg-sky-500 text-black"
-                      : "bg-gradient-to-r from-purple-500 to-pink-500 text-white",
-                  ].join(" ")}>
-                    {plan.badge}
-                  </span>
-                )}
-
-                <div className="flex items-start gap-2">
-                  <StarIcon className={[
-                    "mt-0.5 h-4 w-4 shrink-0",
-                    plan.id === "creator" ? "text-purple-400" : plan.current ? "text-sky-400" : "text-white/30"
-                  ].join(" ")} />
-                  <div>
-                    <div className="text-sm font-semibold text-white/90">{plan.name}</div>
-                    <div className="mt-1">
-                      <span className="text-2xl font-extrabold">{plan.price}</span>
-                      <span className="text-xs text-white/45"> {plan.period}</span>
-                    </div>
-                  </div>
+      {/* Plans Section */}
+      <section className="mb-20">
+        <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-8">
+          Available Plans
+        </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className={`relative rounded-[2.5rem] p-10 flex flex-col glass-panel transition-all hover:border-white/20 ${
+                plan.current ? "border-primary/40 bg-primary/5 ring-4 ring-primary/5" : "border-white/5"
+              }`}
+            >
+              {plan.badge && (
+                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                  plan.current ? "bg-primary text-black shadow-lg shadow-primary/20" : "bg-secondary text-black"
+                }`}>
+                  {plan.badge}
                 </div>
+              )}
 
-                <ul className="mt-5 space-y-2">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-xs text-white/70">
-                      <CheckCircleIcon className="h-4 w-4 shrink-0 text-emerald-400" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  type="button"
-                  disabled={plan.current}
-                  className={[
-                    "mt-6 inline-flex h-10 w-full items-center justify-center rounded-xl text-xs font-semibold transition",
-                    plan.current
-                      ? "bg-white/10 text-white/50 cursor-default ring-1 ring-white/10"
-                      : "bg-sky-500 text-black hover:bg-sky-400",
-                  ].join(" ")}
-                >
-                  {plan.current ? "Current Plan" : `Switch to ${plan.name}`}
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Payment method */}
-        <section className="mt-8">
-          <div className="text-xs font-semibold tracking-[0.22em] text-white/35 mb-4">
-            PAYMENT METHOD
-          </div>
-          <div className="rounded-3xl bg-black/35 p-6 ring-1 ring-white/10 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 ring-1 ring-white/10">
-                  <CreditCardIcon className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-white/90">Visa ending in 4242</div>
-                  <div className="mt-0.5 text-xs text-white/45">Expires 08 / 27</div>
+              <div className="mb-8">
+                <h3 className="text-xl font-black text-white mb-2">{plan.name}</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-white tracking-tighter">{plan.price}</span>
+                  <span className="text-white/30 font-bold text-sm">{plan.period}</span>
                 </div>
               </div>
+
+              <ul className="space-y-4 mb-10 flex-1">
+                {plan.features.map((f) => (
+                  <li key={f} className="flex items-center gap-3 text-xs font-medium text-white/60 leading-tight">
+                    <span className="material-symbols-outlined text-sm text-primary">check_circle</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
               <button
-                type="button"
-                className="rounded-xl bg-white/5 px-4 py-2 text-xs font-semibold ring-1 ring-white/10 hover:bg-white/10"
+                onClick={() => !plan.current && handleAction(`Switching to ${plan.name}`)}
+                disabled={plan.current}
+                className={`w-full py-4 rounded-2xl font-black text-sm transition-all ${
+                  plan.current
+                    ? "bg-white/5 text-white/30 cursor-not-allowed"
+                    : "bg-white text-black hover:bg-primary shadow-lg shadow-white/5"
+                }`}
               >
-                Update
+                {plan.current ? "ACTIVE NOW" : "UPGRADE"}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Payment Method & History */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Payment Method */}
+        <section>
+          <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-8">
+            Payment Method
+          </div>
+          <div className="glass-panel p-8 rounded-[2.5rem] relative overflow-hidden group">
+            <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all" />
+            
+            <div className="flex items-center gap-6 mb-8">
+              <div className="w-16 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black italic shadow-lg">
+                VISA
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-lg font-bold text-white tracking-tight">Visa ending in 4242</div>
+                <div className="text-xs text-white/30 font-black uppercase tracking-widest mt-1">EXPIRES 08 / 27</div>
+              </div>
+              <button 
+                onClick={() => handleAction("Updating card")}
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-white hover:bg-white/10 transition-all"
+              >
+                <span className="material-symbols-outlined text-sm">edit</span>
               </button>
             </div>
 
-            <div className="mt-5 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/60">Next billing date</span>
-                <span className="font-semibold text-white/90">March 12, 2026</span>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <div className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Next Bill</div>
+                <div className="text-sm font-bold text-white">Mar 12, 2026</div>
               </div>
-              <div className="mt-2 flex items-center justify-between text-sm">
-                <span className="text-white/60">Amount due</span>
-                <span className="font-semibold text-sky-300">$9.00</span>
+              <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <div className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-1">Amount</div>
+                <div className="text-sm font-bold text-primary">$9.00</div>
               </div>
             </div>
 
             <button
-              type="button"
-              className="mt-4 w-full rounded-xl bg-red-500/10 py-2.5 text-xs font-semibold text-red-300 ring-1 ring-red-500/20 hover:bg-red-500/15"
+              onClick={() => handleAction("Cancellation request")}
+              className="w-full py-4 text-[10px] font-black text-red-400 uppercase tracking-widest hover:bg-red-500/10 rounded-2xl transition-all"
             >
               Cancel Subscription
             </button>
           </div>
         </section>
 
-        {/* Invoice history */}
-        <section className="mt-8">
-          <div className="text-xs font-semibold tracking-[0.22em] text-white/35 mb-4">
-            INVOICE HISTORY
+        {/* Invoice History */}
+        <section>
+          <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-8">
+            Invoice History
           </div>
-          <div className="rounded-3xl bg-black/35 ring-1 ring-white/10 backdrop-blur overflow-hidden">
-            {INVOICES.map((inv, i) => (
-              <div
-                key={inv.id}
-                className={[
-                  "flex items-center justify-between px-6 py-4",
-                  i !== 0 ? "border-t border-white/8" : "",
-                ].join(" ")}
-              >
-                <div>
-                  <div className="text-sm font-medium text-white/85">{inv.id}</div>
-                  <div className="mt-0.5 text-xs text-white/40">{inv.date}</div>
+          <div className="glass-panel rounded-[2.5rem] overflow-hidden">
+            <div className="divide-y divide-white/5">
+              {INVOICES.map((inv) => (
+                <div key={inv.id} className="p-6 flex items-center justify-between hover:bg-white/2 transition-colors">
+                  <div>
+                    <div className="text-sm font-bold text-white">{inv.id}</div>
+                    <div className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-1">{inv.date}</div>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="text-right">
+                      <div className="text-sm font-black text-white">{inv.amount}</div>
+                      <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mt-1">{inv.status}</div>
+                    </div>
+                    <button 
+                      onClick={() => handleAction(`Downloading ${inv.id}`)}
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-white hover:bg-primary hover:text-black transition-all"
+                    >
+                      <span className="material-symbols-outlined text-sm">download</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-white/90">{inv.amount}</span>
-                  <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-bold tracking-widest text-emerald-400 ring-1 ring-emerald-400/20">
-                    {inv.status}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-xs text-cyan-300 hover:underline"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
+      </div>
 
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/dashboard"
-            className="inline-flex h-11 items-center justify-center rounded-xl bg-white px-6 text-sm font-semibold text-black hover:bg-white/90"
-          >
-            Back to Dashboard
-          </Link>
-        </div>
+      <div className="mt-20 flex justify-center">
+        <Link
+          href="/dashboard"
+          className="px-12 h-14 flex items-center justify-center rounded-2xl bg-white text-black font-black hover:brightness-90 transition-all shadow-lg shadow-white/5"
+        >
+          Back to Dashboard
+        </Link>
       </div>
     </div>
   );
 }
+

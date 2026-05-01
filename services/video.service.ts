@@ -1,5 +1,6 @@
 import { getAccessToken } from '@/lib/auth-session';
 
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? '').replace(/\/+$/, '');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -283,4 +284,42 @@ export async function uploadVideo(options: UploadVideoOptions): Promise<CreateVi
   options.onProgress?.('confirm', 100);
 
   return result;
+}
+
+
+// services/videoService.ts
+
+export async function getVideos() {
+  const token = getAccessToken();
+
+  const res = await fetch(`${API_BASE}/dashboard`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  // 🔥 Transform data for UI
+  return data.videos
+    .filter((v: any) => v.status === "ready") // only playable videos
+    .map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      description: v.description,
+      tags: v.tags,
+      views: v.views,
+      duration: v.duration,
+      createdAt: v.createdAt,
+
+      // ✅ FIX: build full URLs
+      thumbnailUrl: v.thumbnailPath
+        ? `${API_BASE}/videos/thumbnail?key=${encodeURIComponent(v.thumbnailPath)}`
+        : "/placeholder.jpg",
+
+      videoUrl: v.s3HlsKey
+        ? `${API_BASE}/videos/play?key=${encodeURIComponent(v.s3HlsKey)}`
+        : null,
+    }));
 }

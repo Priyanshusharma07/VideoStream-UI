@@ -6,7 +6,7 @@ export const mockVideos: Video[] = [
     title: "LIVE: Building a Streaming UI in Next.js",
     description:
       "Join the live session where we build a streaming UI end-to-end, discuss architecture, and answer questions.",
-    thumbnailUrl: "https://i.ytimg.com/vi/2kzVvQF2m6g/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-01.svg",
     videoUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
     duration: "LIVE",
     views: 12_480,
@@ -20,7 +20,7 @@ export const mockVideos: Video[] = [
     title: "LIVE: Chill Beats Radio (Demo Stream)",
     description:
       "A demo live stream for UI development. This plays an HLS sample stream using hls.js on supported browsers.",
-    thumbnailUrl: "https://i.ytimg.com/vi/jfKfPfyJRdk/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-02.svg",
     videoUrl: "https://test-streams.mux.dev/test_001/stream.m3u8",
     duration: "LIVE",
     views: 98_210,
@@ -34,7 +34,7 @@ export const mockVideos: Video[] = [
     title: "Next.js App Router Crash Course (2026 Edition)",
     description:
       "Learn the fundamentals of the Next.js App Router: routing, layouts, loading states, server components, and best practices for scalable apps.",
-    thumbnailUrl: "https://i.ytimg.com/vi/1WmNXEVia8I/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-03.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     duration: "18:42",
@@ -49,7 +49,7 @@ export const mockVideos: Video[] = [
     title: "React 19 Features You Should Know",
     description:
       "A fast walkthrough of practical React 19 updates and patterns for production apps, with examples and migration tips.",
-    thumbnailUrl: "https://i.ytimg.com/vi/Ke90Tje7VS0/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-04.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     duration: "12:09",
@@ -64,7 +64,7 @@ export const mockVideos: Video[] = [
     title: "Late Night Lo-Fi Beats (1 Hour Mix)",
     description:
       "Relaxing lo-fi playlist for coding sessions. Grab your headphones and enjoy the vibe.",
-    thumbnailUrl: "https://i.ytimg.com/vi/5qap5aO4i9A/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-05.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
     duration: "1:00:00",
@@ -79,7 +79,7 @@ export const mockVideos: Video[] = [
     title: "TypeScript Patterns: No Any, Real Safety",
     description:
       "Write clean TypeScript with strict mode: typed APIs, discriminated unions, and utility patterns that scale.",
-    thumbnailUrl: "https://i.ytimg.com/vi/zQnBQ4tB3ZA/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-06.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
     duration: "22:31",
@@ -94,7 +94,7 @@ export const mockVideos: Video[] = [
     title: "HLS Streaming Explained (Manifest, Segments, ABR)",
     description:
       "A practical explanation of how HLS works and how players pick quality levels using adaptive bitrate streaming.",
-    thumbnailUrl: "https://i.ytimg.com/vi/8pDqJVdNa44/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-01.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
     duration: "14:56",
@@ -109,7 +109,7 @@ export const mockVideos: Video[] = [
     title: "Top Movie Trailers This Week",
     description:
       "A quick roundup of the most exciting new movie trailers, with timestamps and highlights.",
-    thumbnailUrl: "https://i.ytimg.com/vi/EXeTwQWrcwY/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-02.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     duration: "09:18",
@@ -124,7 +124,7 @@ export const mockVideos: Video[] = [
     title: "System Design: Building a Video CDN (Beginner Friendly)",
     description:
       "From origin to edge: a high-level introduction to CDN concepts used in video streaming platforms.",
-    thumbnailUrl: "https://i.ytimg.com/vi/b1Zb9x2B5cI/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-03.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
     duration: "27:44",
@@ -139,7 +139,7 @@ export const mockVideos: Video[] = [
     title: "Next.js Performance Checklist (Real World)",
     description:
       "Speed up your Next.js app: caching, images, route splitting, bundle analysis, and common pitfalls.",
-    thumbnailUrl: "https://i.ytimg.com/vi/6oT9KcG5x1c/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-04.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
     duration: "16:05",
@@ -154,7 +154,7 @@ export const mockVideos: Video[] = [
     title: "Gaming Highlights: Best Moments Compilation",
     description:
       "A quick compilation of the best moments from recent matches, edited for maximum fun.",
-    thumbnailUrl: "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-05.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
     duration: "11:47",
@@ -169,7 +169,7 @@ export const mockVideos: Video[] = [
     title: "UI Design Basics for Developers (Tailwind Edition)",
     description:
       "Spacing, typography, color, and layout: practical UI tips you can apply immediately using Tailwind CSS.",
-    thumbnailUrl: "https://i.ytimg.com/vi/3yqDxhR2XxE/maxresdefault.jpg",
+    thumbnailUrl: "/demo/thumbs/thumb-06.svg",
     videoUrl:
       "https://storage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
     duration: "19:22",

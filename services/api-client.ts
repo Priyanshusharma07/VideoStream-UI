@@ -171,6 +171,12 @@ export async function getApi<Res>(
         error: { code: "forbidden", message: "Forbidden" },
       };
     }
+    if (res.status === 404) {
+      return {
+        ok: false,
+        error: { code: "not_found", message: "Not found" },
+      };
+    }
 
     return {
       ok: false,

@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { useWatchlist } from "@/src/hooks/useWatchlist";
 import type { Video } from "@/src/types/video";
 import { getVideoById } from "@/src/services/videoService";
-import { VideoCard } from "@/src/components/videos/VideoCard";
+import { VideoCard } from "@/components/video/VideoCard";
 
 type Item = { id: string; video: Video | null };
 
@@ -45,50 +45,47 @@ export function WatchlistClient() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl bg-white/5 p-6 text-sm text-white/55 ring-1 ring-white/10">
-        Loading watchlist...
+      <div className="flex justify-center py-24">
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (ids.length === 0) {
     return (
-      <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-        <div className="text-sm font-semibold text-white/85">No saved videos</div>
-        <div className="mt-1 text-sm text-white/55">
-          Open a video and click Save to add it here.
-        </div>
+      <div className="text-center py-24 glass-panel rounded-[2rem]">
+        <span className="material-symbols-outlined text-4xl text-white/20 mb-4">bookmark_outline</span>
+        <p className="text-white/40 font-bold mb-6">Your watchlist is empty.</p>
         <Link
           href="/"
-          className="mt-4 inline-flex rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white/80 ring-1 ring-white/10 hover:bg-white/15"
+          className="inline-flex rounded-2xl bg-primary px-8 py-3 font-black text-black hover:brightness-110 shadow-lg shadow-primary/20 transition-all"
         >
-          Browse videos
+          Discover Stories
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {missing.length > 0 ? (
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-100">
-          Some saved IDs are no longer in the demo dataset:{" "}
-          <span className="font-mono text-amber-200">{missing.join(", ")}</span>
+    <div className="space-y-12">
+      {missing.length > 0 && (
+        <div className="rounded-2xl border border-secondary/20 bg-secondary/10 px-6 py-4 text-sm font-bold text-secondary">
+          Notice: Some saved titles are currently unavailable in the vault.
         </div>
-      ) : null}
+      )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items
           .filter((x) => x.video !== null)
           .map((x) => (
-            <div key={x.id} className="relative">
+            <div key={x.id} className="relative group">
               <VideoCard video={x.video as Video} />
               <button
                 type="button"
                 onClick={() => removeId(x.id)}
-                className="absolute right-3 top-3 rounded-xl bg-black/60 px-3 py-2 text-[10px] font-semibold text-white/85 ring-1 ring-white/10 hover:bg-black/75"
+                className="absolute right-4 top-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl bg-black/60 backdrop-blur-md px-3 py-2 text-[10px] font-black text-white ring-1 ring-white/10 hover:bg-red-500 hover:ring-red-400"
               >
-                Remove
+                REMOVE
               </button>
             </div>
           ))}
@@ -96,4 +93,5 @@ export function WatchlistClient() {
     </div>
   );
 }
+
 

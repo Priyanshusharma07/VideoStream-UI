@@ -338,7 +338,20 @@ function encodeVideoId(id: number | string) {
 export async function getVideoDetails(
   id: number | string,
 ): Promise<ApiResult<WatchPagePayload>> {
-  return getApi<WatchPagePayload>(`/videos/${encodeVideoId(id)}`, { cache: "no-store" });
+  const result = await getApi<unknown>(`/videos/${encodeVideoId(id)}`, {
+    cache: "no-store",
+  });
+  if (!result.ok) return result as ApiResult<WatchPagePayload>;
+
+  const payload = coerceWatchPagePayload(result.data, id);
+  if (!payload) {
+    return {
+      ok: false,
+      error: { code: "bad_response", message: "Unexpected video details response." },
+    };
+  }
+
+  return { ok: true, data: payload };
 }
 
 export async function pollVideoStatus(
@@ -358,6 +371,103 @@ export async function recordView(id: number | string): Promise<void> {
   } catch {
     // fire-and-forget — silently ignore failures
   }
+}
+
+function formatCompactNumber(n: number): string {
+  const abs = Math.abs(n);
+  if (abs < 1000) return String(n);
+  const units: Array<[number, string]> = [
+    [1e9, "B"],
+    [1e6, "M"],
+    [1e3, "K"],
+  ];
+  for (const [div, suf] of units) {
+    if (abs >= div) {
+      const v = n / div;
+      const digits = abs >= div * 100 ? 0 : 1;
+      const text = v.toFixed(digits).replace(/\.0$/, "");
+      return `${text}${suf}`;
+    }
+  }
+  return String(n);
+}
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((v) => typeof v === "string") as string[];
+}
+
+function coerceWatchPagePayload(
+  raw: unknown,
+  fallbackId: number | string,
+): WatchPagePayload | null {
+  if (!isRecord(raw)) return null;
+
+  // If the backend already returns the desired WatchPagePayload shape, accept it.
+  if (isRecord(raw.video) && isRecord(raw.chat) && isRecord(raw.playback)) {
+    const video = raw.video as Record<string, unknown>;
+    const chat = raw.chat as Record<string, unknown>;
+    const playback = raw.playback as Record<string, unknown>;
+    if (
+      typeof video.title === "string" &&
+      isRecord(video.creator) &&
+      typeof chat.viewersLabel === "string" &&
+      typeof playback.status === "string"
+    ) {
+      return raw as WatchPagePayload;
+    }
+  }
+
+  const videoRaw = isRecord(raw.video) ? (raw.video as Record<string, unknown>) : null;
+  if (!videoRaw) return null;
+
+  const id =
+    getNumber(videoRaw, ["id"]) ?? getString(videoRaw, ["id"]) ?? String(fallbackId);
+  const title = getString(videoRaw, ["title"]) ?? "Untitled";
+  const description = getString(videoRaw, ["description"]) ?? "";
+  const tags = asStringArray(videoRaw.tags);
+  const thumbnailUrl = getString(videoRaw, ["thumbnailUrl"]) ?? null;
+  const status = getString(videoRaw, ["status"]) ?? "processing";
+
+  const likes =
+    typeof raw.likes === "number" && Number.isFinite(raw.likes) ? raw.likes : 0;
+
+  const playbackRaw = isRecord(raw.playback) ? (raw.playback as Record<string, unknown>) : {};
+  const playbackStatus = getString(playbackRaw, ["status"]) ?? status;
+  const hlsManifestPath = getString(playbackRaw, ["hlsManifestPath"]) ?? null;
+
+  const chatRaw = isRecord(raw.chat) ? (raw.chat as Record<string, unknown>) : {};
+  const messagesRaw = Array.isArray(chatRaw.messages) ? chatRaw.messages : [];
+  const messages = messagesRaw
+    .filter((m): m is Record<string, unknown> => isRecord(m))
+    .map((m) => {
+      const mid =
+        getString(m, ["id"]) ??
+        `m-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(16).slice(2)}`;
+      const userRaw = isRecord(m.user) ? (m.user as Record<string, unknown>) : {};
+      const name = getString(userRaw, ["name"]) ?? "Anonymous";
+      const message = getString(m, ["message"]) ?? "";
+      return { id: mid, user: { name }, message };
+    });
+
+  return {
+    video: {
+      id,
+      title,
+      description,
+      tags,
+      thumbnailUrl,
+      kind: "video",
+      category: tags[0] ?? "General",
+      creator: { id: "unknown", name: "Unknown", avatarUrl: null },
+      viewsLabel: "",
+      uploadedLabel: "",
+      likesLabel: formatCompactNumber(likes),
+      status,
+    },
+    chat: { viewersLabel: "0 viewers", messages },
+    playback: { status: playbackStatus, hlsManifestPath },
+  };
 }
 
 // NOTE: The presigned URL upload flow (getUploadUrl, uploadVideo, confirmUpload)

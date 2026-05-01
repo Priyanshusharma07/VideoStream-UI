@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { StreamHubLogo } from "@/components/StreamHubLogo";
 import { UploadIcon, VideoIcon, CheckCircleIcon } from "@/components/icons";
 import { useToast } from "@/components/ui/ToastProvider";
 import { uploadVideo } from "@/services/video.service";
@@ -22,9 +21,9 @@ function formatBytes(bytes: number): string {
 }
 
 function phaseLabel(phase: UploadPhase, progress: number): string {
-  if (phase === "presign") return "Getting upload URL…";
-  if (phase === "upload") return `Uploading to cloud… ${progress}%`;
-  if (phase === "confirm") return "Finalizing…";
+  if (phase === "presign") return "Authenticating Upload URL…";
+  if (phase === "upload") return `Uploading cinematic assets… ${progress}%`;
+  if (phase === "confirm") return "Finalizing publication…";
   return "";
 }
 
@@ -57,7 +56,7 @@ export default function UploadPage() {
       toast.push({
         variant: "error",
         title: "Unsupported file",
-        message: "Please select a video file (mp4, webm, or mov).",
+        message: "Please select a cinematic video file.",
       });
       return;
     }
@@ -81,7 +80,6 @@ export default function UploadPage() {
     if (isBusy) return;
     const f = e.target.files?.[0];
     if (f) handleFile(f);
-    // Reset the input so the same file can be re-selected if needed
     e.target.value = "";
   }
 
@@ -121,22 +119,13 @@ export default function UploadPage() {
 
       setVideoId(String(result.videoId));
       setDone(true);
-      toast.push({ variant: "success", title: "Upload complete! Video is processing." });
-      router.push(`/videos/${result.videoId}?processing=1`);
+      toast.push({ variant: "success", title: "Success!", message: "Your video is now being processed." });
+      router.push(`/watch/${result.videoId}?processing=1`);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
-        toast.push({ variant: "info", title: "Upload cancelled" });
+        toast.push({ variant: "info", title: "Cancelled", message: "Upload was aborted." });
       } else {
-        const message =
-          err instanceof Error ? err.message : "An unexpected error occurred.";
-
-        if (message.toLowerCase().includes("not authenticated") ||
-            message.toLowerCase().includes("sign in")) {
-          toast.push({ variant: "error", title: "Please sign in to upload" });
-          router.push("/login");
-          return;
-        }
-
+        const message = err instanceof Error ? err.message : "An unexpected error occurred.";
         setErrorMsg(message);
         toast.push({ variant: "error", title: "Upload failed", message });
       }
@@ -146,98 +135,59 @@ export default function UploadPage() {
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
-    <div className="min-h-screen bg-[#070A12] px-6 py-10 text-white">
-      {/* Background glows */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-purple-600/15 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
-      </div>
-
-      <div className="mx-auto w-full max-w-2xl">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <StreamHubLogo />
-          <Link
-            href="/dashboard"
-            className="text-sm text-white/50 transition hover:text-white"
-          >
-            ← Dashboard
-          </Link>
-        </div>
-
-        <div className="rounded-3xl bg-black/35 p-8 ring-1 ring-white/10 backdrop-blur">
-          <h1 className="text-2xl font-semibold">Upload Video</h1>
-          <p className="mt-1 text-sm text-white/50">
-            Share your content with the world. Supports MP4, MOV, WebM.
+    <div className="py-12 px-[5vw]">
+      <div className="mx-auto w-full max-w-xl">
+        <div className="glass-panel p-10 rounded-[2.5rem]">
+          <h1 className="text-3xl font-black text-white tracking-tight">Upload Cinematic</h1>
+          <p className="mt-2 text-white/50 font-medium">
+            Share your masterpiece with the world. Supports up to 8K resolution.
           </p>
 
-          {/* ── Success state ── */}
           {done ? (
-            <div className="mt-8 flex flex-col items-center gap-4 rounded-2xl bg-emerald-500/10 p-10 text-center ring-1 ring-emerald-400/20">
-              <CheckCircleIcon className="h-12 w-12 text-emerald-400" />
-              <div className="text-xl font-semibold">Upload Complete!</div>
-              <p className="text-sm text-white/60">
-                <span className="font-medium text-white/90">&ldquo;{title}&rdquo;</span> is
-                processing. It will be available shortly.
-              </p>
-              {videoId && (
-                <p className="text-xs text-white/40">Video ID: {videoId}</p>
-              )}
-              <div className="mt-2 flex gap-3">
+            <div className="mt-10 flex flex-col items-center gap-6 rounded-3xl bg-primary/5 p-12 text-center border border-primary/20">
+              <CheckCircleIcon className="h-16 w-16 text-primary" />
+              <div>
+                <div className="text-2xl font-black text-white mb-2">Upload Successful!</div>
+                <p className="text-white/60 font-medium max-w-xs mx-auto">
+                  Your project <span className="text-primary">&ldquo;{title}&rdquo;</span> is being rendered.
+                </p>
+              </div>
+              <div className="flex gap-4">
                 <button
                   type="button"
                   onClick={() => {
-                    setFile(null);
-                    setTitle("");
-                    setDescription("");
-                    setTags("");
-                    setProgress(0);
-                    setDone(false);
-                    setVideoId(null);
-                    setErrorMsg(null);
+                    setFile(null); setTitle(""); setDescription(""); setTags("");
+                    setProgress(0); setDone(false); setVideoId(null); setErrorMsg(null);
                   }}
-                  className="rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
+                  className="rounded-2xl bg-white/5 px-6 py-3 font-bold text-white border border-white/10 hover:bg-white/10"
                 >
-                  Upload Another
+                  New Upload
                 </button>
                 <Link
-                  href="/dashboard"
-                  className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-sky-400"
+                  href="/"
+                  className="rounded-2xl bg-primary px-8 py-3 font-black text-black hover:brightness-110 shadow-lg shadow-primary/20"
                 >
-                  Go to Dashboard
+                  Home Feed
                 </Link>
               </div>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="mt-8 space-y-6">
+            <form onSubmit={onSubmit} className="mt-10 space-y-8">
               {/* Drop zone */}
               <div
-                id="upload-dropzone"
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  if (!isBusy) setDragging(true);
-                }}
+                onDragOver={(e) => { e.preventDefault(); if (!isBusy) setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
-                onClick={() => {
-                  if (!isBusy) fileRef.current?.click();
-                }}
-                className={[
-                  "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-10 text-center transition",
-                  isBusy ? "cursor-not-allowed opacity-60" : "",
-                  dragging
-                    ? "border-cyan-400/60 bg-cyan-400/5"
-                    : file
-                      ? "border-emerald-400/50 bg-emerald-400/5"
-                      : "border-white/15 bg-white/3 hover:border-white/25 hover:bg-white/5",
-                ].join(" ")}
+                onClick={() => { if (!isBusy) fileRef.current?.click(); }}
+                className={`
+                  flex cursor-pointer flex-col items-center justify-center gap-4 rounded-[2rem] border-2 border-dashed p-12 text-center transition-all duration-300
+                  ${isBusy ? "cursor-not-allowed opacity-50" : ""}
+                  ${dragging ? "border-primary bg-primary/10 scale-[0.98]" : file ? "border-primary/40 bg-primary/5" : "border-white/10 bg-white/2 hover:border-primary/50 hover:bg-primary/5"}
+                `}
               >
                 <input
                   ref={fileRef}
-                  id="video-file-input"
                   type="file"
                   accept="video/*"
                   className="hidden"
@@ -246,100 +196,66 @@ export default function UploadPage() {
                 />
                 {file ? (
                   <>
-                    <VideoIcon className="h-10 w-10 text-emerald-400" />
-                    <div className="text-sm font-semibold text-white/90">{file.name}</div>
-                    <div className="text-xs text-white/45">
-                      {formatBytes(file.size)} •{" "}
-                      {isBusy ? "Upload in progress…" : "Click to change"}
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                      <VideoIcon className="h-8 w-8" />
+                    </div>
+                    <div className="text-base font-bold text-white leading-tight">{file.name}</div>
+                    <div className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-widest">
+                      {formatBytes(file.size)}
                     </div>
                   </>
                 ) : (
                   <>
-                    <UploadIcon className="h-10 w-10 text-white/30" />
-                    <div className="text-sm font-semibold text-white/70">
-                      Drag &amp; drop your video here
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-white/30 group-hover:text-primary transition-colors">
+                      <UploadIcon className="h-8 w-8" />
                     </div>
-                    <div className="text-xs text-white/40">or click to browse</div>
-                    <div className="text-xs text-white/30">MP4 · MOV · WebM</div>
+                    <div>
+                      <div className="text-base font-bold text-white/80">Select master file</div>
+                      <div className="text-sm text-white/40 mt-1">or drag and drop here</div>
+                    </div>
+                    <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">4K • HDR • MP4</div>
                   </>
                 )}
               </div>
 
-              {/* Title */}
-              <div>
-                <label
-                  htmlFor="upload-title"
-                  className="mb-2 block text-xs font-medium text-white/60"
-                >
-                  TITLE <span className="text-red-400">*</span>
-                </label>
-                <input
-                  id="upload-title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Give your video a title…"
-                  disabled={isBusy}
-                  className="w-full rounded-xl bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-sky-500/50 disabled:opacity-50"
-                />
-              </div>
+              <div className="space-y-6">
+                {/* Title */}
+                <div>
+                  <label className="mb-2 block text-xs font-black text-white/40 uppercase tracking-widest">Title</label>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter production title..."
+                    disabled={isBusy}
+                    className="w-full rounded-2xl bg-white/5 px-5 py-4 text-sm text-white placeholder:text-white/20 outline-none border border-white/5 focus:border-primary/50 focus:bg-white/10 transition-all"
+                  />
+                </div>
 
-              {/* Description */}
-              <div>
-                <label
-                  htmlFor="upload-description"
-                  className="mb-2 block text-xs font-medium text-white/60"
-                >
-                  DESCRIPTION
-                </label>
-                <textarea
-                  id="upload-description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Tell viewers about your video…"
-                  rows={3}
-                  disabled={isBusy}
-                  className="w-full resize-none rounded-xl bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-sky-500/50 disabled:opacity-50"
-                />
-              </div>
+                {/* Description */}
+                <div>
+                  <label className="mb-2 block text-xs font-black text-white/40 uppercase tracking-widest">Description</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe the cinematic vision..."
+                    rows={4}
+                    disabled={isBusy}
+                    className="w-full resize-none rounded-2xl bg-white/5 px-5 py-4 text-sm text-white placeholder:text-white/20 outline-none border border-white/5 focus:border-primary/50 focus:bg-white/10 transition-all"
+                  />
+                </div>
 
-              {/* Tags */}
-              <div>
-                <label
-                  htmlFor="upload-tags"
-                  className="mb-2 block text-xs font-medium text-white/60"
-                >
-                  TAGS <span className="text-white/30">(comma-separated)</span>
-                </label>
-                <input
-                  id="upload-tags"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  placeholder="gaming, tutorial, react…"
-                  disabled={isBusy}
-                  className="w-full rounded-xl bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-sky-500/50 disabled:opacity-50"
-                />
-              </div>
-
-              {/* Visibility */}
-              <div>
-                <label className="mb-3 block text-xs font-medium text-white/60">
-                  VISIBILITY
-                </label>
+                {/* Visibility */}
                 <div className="grid grid-cols-3 gap-3">
                   {(["public", "unlisted", "private"] as Visibility[]).map((v) => (
                     <button
                       key={v}
                       type="button"
-                      id={`visibility-${v}`}
                       onClick={() => setVisibility(v)}
                       disabled={isBusy}
-                      className={[
-                        "rounded-xl px-3 py-2.5 text-xs font-semibold capitalize transition ring-1",
-                        visibility === v
-                          ? "bg-sky-500/20 text-sky-300 ring-sky-500/40"
-                          : "bg-white/5 text-white/60 ring-white/10 hover:bg-white/10 hover:text-white",
-                        isBusy ? "opacity-50 cursor-not-allowed" : "",
-                      ].join(" ")}
+                      className={`
+                        rounded-2xl py-3 text-[11px] font-black uppercase tracking-widest transition-all border
+                        ${visibility === v ? "bg-primary text-black border-primary" : "bg-white/5 text-white/40 border-white/5 hover:border-white/20"}
+                      `}
                     >
                       {v}
                     </button>
@@ -347,99 +263,48 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              {/* Progress bar */}
+              {/* Progress */}
               {isBusy && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-white/50">
-                    <span>{phaseLabel(phase, progress)}</span>
-                    {phase === "upload" && <span>{progress}%</span>}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
+                    <span className="text-primary">{phaseLabel(phase, progress)}</span>
+                    <span className="text-white/40">{progress}%</span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5 border border-white/5">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-sky-500 to-purple-500 transition-all duration-200"
-                      style={{
-                        width:
-                          phase === "presign"
-                            ? "5%"
-                            : phase === "upload"
-                              ? `${Math.max(5, progress)}%`
-                              : "98%",
-                      }}
+                      className="h-full rounded-full bg-primary transition-all duration-300 shadow-[0_0_15px_rgba(179,197,255,0.5)]"
+                      style={{ width: `${Math.max(5, progress)}%` }}
                     />
                   </div>
-                  {phase === "upload" && (
-                    <p className="text-xs text-white/35">
-                      Uploading directly to cloud storage. This may take a moment for
-                      large files.
-                    </p>
-                  )}
                 </div>
               )}
 
-              {/* Error message */}
               {errorMsg && !isBusy && (
-                <div
-                  role="alert"
-                  className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-300 ring-1 ring-red-400/20"
-                >
+                <div className="rounded-2xl bg-red-500/10 px-5 py-4 text-sm font-bold text-red-400 border border-red-500/20">
                   {errorMsg}
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                {isBusy ? (
-                  <button
-                    id="cancel-upload-btn"
-                    type="button"
-                    onClick={cancelUpload}
-                    className="inline-flex h-11 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
-                  >
-                    Cancel Upload
-                  </button>
-                ) : (
-                  <Link
-                    href="/dashboard"
-                    className="inline-flex h-11 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/15"
-                  >
-                    Cancel
-                  </Link>
-                )}
-
+              <div className="flex gap-4 pt-4">
+                <Link
+                  href="/"
+                  className="flex-1 rounded-2xl bg-white/5 py-4 text-sm font-bold text-white text-center border border-white/10 hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </Link>
                 <button
-                  id="publish-video-btn"
                   type="submit"
                   disabled={!file || !title.trim() || isBusy}
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-sky-500 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex-[2] rounded-2xl bg-primary py-4 text-sm font-black text-black hover:brightness-110 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:hover:brightness-100 transition-all"
                 >
-                  <UploadIcon className="h-4 w-4" />
-                  {isBusy ? "Uploading…" : "Publish Video"}
+                  {isBusy ? "Publishing Assets..." : "Publish Cinematic"}
                 </button>
               </div>
             </form>
           )}
         </div>
-
-        {/* Upload flow info */}
-        {!done && !isBusy && (
-          <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-            {[
-              { step: "01", label: "Select video", desc: "Pick your .mp4, .mov, or .webm file" },
-              { step: "02", label: "Upload to cloud", desc: "Streams directly to S3 — fast & secure" },
-              { step: "03", label: "Processing", desc: "Your video is transcoded automatically" },
-            ].map(({ step, label, desc }) => (
-              <div
-                key={step}
-                className="rounded-2xl bg-white/3 px-4 py-5 ring-1 ring-white/8"
-              >
-                <div className="text-xs font-bold text-sky-400 mb-1">{step}</div>
-                <div className="text-xs font-semibold text-white/80">{label}</div>
-                <div className="mt-1 text-xs text-white/40">{desc}</div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
 }
+

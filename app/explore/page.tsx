@@ -3,22 +3,16 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { HomeHeader } from "@/components/home/HomeHeader";
+import { getApi } from "@/services/api-client";
 import { SearchIcon } from "@/components/icons";
 
 type ApiError = { code: string; message: string };
-type ApiResult<T> = { ok: true; data: T } | { ok: false; error: ApiError };
-
 type SearchItem = {
   id: string;
   title: string;
   year?: number;
   kind: "movie" | "show" | "live";
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object";
-}
 
 function ExploreInner({ initialQ }: { initialQ: string }) {
   const [query, setQuery] = useState(initialQ);
@@ -32,14 +26,10 @@ function ExploreInner({ initialQ }: { initialQ: string }) {
     (q: string) => {
       startTransition(async () => {
         setError(null);
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-        const json = (await res.json().catch(() => null)) as unknown;
-        if (!isRecord(json) || typeof json.ok !== "boolean") {
-          setError("Unexpected response.");
-          return;
-        }
-
-        const payload = json as ApiResult<{ items: SearchItem[] }>;
+        const payload = await getApi<{ items: SearchItem[] }>(
+          `/search?q=${encodeURIComponent(q)}`
+        );
+        
         if (!payload.ok) {
           setError(payload.error.message);
           return;
@@ -66,19 +56,21 @@ function ExploreInner({ initialQ }: { initialQ: string }) {
   }, [initialQ, doSearch]);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-6 pb-16 pt-10">
-      <h1 className="text-2xl font-semibold tracking-tight">Explore</h1>
-      <p className="mt-1 text-sm text-white/55">
-        Search across movies, shows, and live content.
-      </p>
+    <div className="mx-auto w-full max-w-5xl px-6 py-12">
+      <div className="mb-10">
+        <h1 className="text-3xl font-black text-white tracking-tight">Explore</h1>
+        <p className="mt-2 text-white/50 font-medium">
+          Search across thousands of cinematic masterpieces.
+        </p>
+      </div>
 
-      <form onSubmit={onSubmit} className="mt-6 max-w-2xl">
-        <div className="flex items-center gap-3 rounded-2xl bg-black/35 p-2 ring-1 ring-white/10 backdrop-blur">
-          <div className="flex flex-1 items-center gap-3 rounded-xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
-            <SearchIcon className="h-5 w-5 text-white/40" />
+      <form onSubmit={onSubmit} className="max-w-3xl mb-12">
+        <div className="flex items-center gap-3 glass-panel p-2 rounded-2xl">
+          <div className="flex flex-1 items-center gap-3 bg-white/5 px-5 py-3 rounded-xl border border-white/5 focus-within:border-primary/50 transition-all">
+            <SearchIcon className="h-5 w-5 text-white/30" />
             <input
-              className="w-full bg-transparent text-sm text-white/85 outline-none placeholder:text-white/35"
-              placeholder="Try: cyber, anime, action..."
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/20"
+              placeholder="Search movies, creators, or genres..."
               aria-label="Search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -88,61 +80,62 @@ function ExploreInner({ initialQ }: { initialQ: string }) {
           <button
             type="submit"
             disabled={!canSearch || isPending}
-            className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-purple-700 to-indigo-600 px-6 text-xs font-semibold tracking-[0.18em] text-white transition hover:from-purple-600 hover:to-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-11 px-8 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-widest hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20"
           >
-            {isPending ? "SEARCHING..." : "SEARCH"}
+            {isPending ? "Searching..." : "Search"}
           </button>
         </div>
       </form>
 
-      {error ? (
-        <div className="mt-5 max-w-2xl rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+      {error && (
+        <div className="mb-8 rounded-2xl border border-red-500/20 bg-red-500/10 px-6 py-4 text-sm font-bold text-red-400">
           {error}
         </div>
-      ) : null}
+      )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((item) => (
-          <div
+          <Link
             key={item.id}
-            className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 transition hover:ring-white/20"
+            href={`/watch/${item.id}`}
+            className="group glass-card p-6 rounded-[1.5rem] flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between">
-              <div className="text-xs font-semibold tracking-[0.2em] text-white/45">
-                {item.kind.toUpperCase()}
-                {item.year ? ` • ${item.year}` : ""}
-              </div>
-              {item.kind === "live" && (
-                <span className="rounded-md bg-cyan-400 px-2 py-0.5 text-[10px] font-bold tracking-widest text-black">
-                  LIVE
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[10px] font-black tracking-[0.2em] text-primary bg-primary/10 px-2 py-0.5 rounded-md uppercase">
+                  {item.kind}
                 </span>
-              )}
+                {item.year && (
+                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    {item.year}
+                  </span>
+                )}
+              </div>
+              <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                {item.title}
+              </h3>
             </div>
-            <div className="mt-2 text-base font-semibold text-white/90">
-              {item.title}
+            <div className="mt-6 flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-white/40">
+              <span>View Details</span>
+              <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
             </div>
-            <Link
-              href={`/watch/${item.id}`}
-              className="mt-4 inline-flex text-sm text-teal-300 hover:underline"
-            >
-              Watch →
-            </Link>
-          </div>
+          </Link>
         ))}
       </div>
 
-      {results.length === 0 && query.trim().length > 0 && !isPending ? (
-        <p className="mt-8 text-sm text-white/45">
-          No results for &ldquo;{query}&rdquo;. Try a different query.
-        </p>
-      ) : null}
-
-      {results.length === 0 && query.trim().length === 0 && (
-        <div className="mt-8 text-center text-sm text-white/30">
-          Type at least 2 characters and press Search.
+      {results.length === 0 && query.trim().length > 0 && !isPending && (
+        <div className="text-center py-20 glass-panel rounded-[2rem]">
+          <span className="material-symbols-outlined text-4xl text-white/20 mb-4">search_off</span>
+          <p className="text-white/40 font-bold">No results found for &ldquo;{query}&rdquo;</p>
         </div>
       )}
-    </main>
+
+      {results.length === 0 && query.trim().length === 0 && (
+        <div className="text-center py-20 text-white/20 font-black uppercase tracking-[0.3em] text-xs">
+          Enter a query to begin discovery
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -154,17 +147,15 @@ function ExploreWithParams() {
 
 export default function ExplorePage() {
   return (
-    <div className="min-h-screen bg-[#070A12] text-white">
-      <HomeHeader />
-      <Suspense
-        fallback={
-          <div className="flex min-h-[60vh] items-center justify-center text-sm text-white/40">
-            Loading...
-          </div>
-        }
-      >
-        <ExploreWithParams />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center text-sm font-black text-white/20 uppercase tracking-widest">
+          Synchronizing...
+        </div>
+      }
+    >
+      <ExploreWithParams />
+    </Suspense>
   );
 }
+

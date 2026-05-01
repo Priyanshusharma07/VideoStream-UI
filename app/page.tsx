@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getVideos } from "@/src/services/videoService";
 import { videoCategories } from "@/src/data/mockVideos";
-import { VideoCard } from "@/src/components/videos/VideoCard";
+import { VideoCard } from "@/components/video/VideoCard";
+
 
 export const dynamic = "force-dynamic";
 
@@ -9,67 +10,70 @@ export default async function Home() {
   const videos = await getVideos();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#070A12] text-white">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-32 -top-28 h-[28rem] w-[28rem] rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute right-[-8rem] top-[-6rem] h-[32rem] w-[32rem] rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="absolute left-1/2 top-32 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-purple-600/12 blur-3xl" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/60" />
+    <div className="px-[5vw] py-10">
+      {/* Hero Section */}
+      <section className="mb-12 relative rounded-[2.5rem] overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
+        <img 
+          src="/demo/thumbs/thumb-01.svg" 
+          alt="Featured" 
+          className="w-full h-[450px] object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 z-20 flex flex-col justify-center px-12 max-w-2xl">
+          <span className="bg-primary/20 text-primary px-4 py-1 rounded-full text-[10px] font-black w-fit mb-4 backdrop-blur-md border border-primary/20 tracking-widest">
+            FEATURED COLLECTION
+          </span>
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tighter text-glow">
+            Discover the Future of <span className="text-primary">Cinema</span>
+          </h1>
+          <p className="text-base text-white/70 mb-8 font-medium">
+            Explore thousands of award-winning movies, series, and live streams from top creators worldwide.
+          </p>
+          <div className="flex gap-4">
+            <Link href={`/watch/${videos[0]?.id || ''}`} className="bg-primary text-black px-8 py-3 rounded-2xl font-black hover:brightness-110 transition-all flex items-center gap-2">
+              <span className="material-symbols-outlined">play_arrow</span>
+              Start Watching
+            </Link>
+            <Link href="/explore" className="bg-white/5 text-white px-8 py-3 rounded-2xl font-bold hover:bg-white/10 transition-all backdrop-blur-md border border-white/10">
+              Browse All
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* Categories Scroller */}
+      <div className="mb-12 flex items-center gap-4 overflow-x-auto no-scrollbar pb-4">
+        {videoCategories.map((c) => (
+          <button
+            key={c}
+            className="whitespace-nowrap px-6 py-2.5 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/50 hover:bg-primary/10 transition-all text-sm font-semibold text-white/80"
+          >
+            {c}
+          </button>
+        ))}
       </div>
 
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="text-sm font-extrabold tracking-[0.22em] text-white/90">
-          STREAMHUB
-        </Link>
-        <nav className="flex items-center gap-4 text-sm text-white/60">
-          <Link href="/feed" className="hover:text-white">
-            Feed
-          </Link>
-          <Link href="/live" className="hover:text-white">
-            Live
-          </Link>
-          <Link href="/upload" className="hover:text-white">
-            Upload
-          </Link>
-          <Link href="/login" className="hover:text-white">
-            Login
-          </Link>
-          <Link href="/qa" className="hover:text-white">
-            QA
-          </Link>
-        </nav>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl px-6 pb-14 pt-4">
-        <div className="rounded-3xl bg-black/35 p-6 ring-1 ring-white/10 backdrop-blur">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-white/90">
-                Browse Videos
-              </h1>
-              <p className="mt-1 text-sm text-white/50">
-                Demo-only content powered by a typed mock data layer (no backend).
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-white/55">
-              {videoCategories.map((c) => (
-                <span
-                  key={c}
-                  className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10"
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
+      {/* Main Content Grid */}
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-white tracking-tight">Trending Now</h2>
+            <p className="text-white/50 mt-1">Handpicked for you based on your interests</p>
           </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {videos.map((v) => (
-              <VideoCard key={v.id} video={v} />
-            ))}
-          </div>
+          <button className="text-primary font-bold hover:underline flex items-center gap-1">
+            See all <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </button>
         </div>
-      </main>
+
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {videos.map((v) => (
+            <VideoCard key={v.id} video={v} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
+

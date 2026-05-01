@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "@/styles/globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { AppLayout } from "@/components/layout/AppLayout";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: { default: "StreamHub — Watch & Stream", template: "%s | StreamHub" },
-  description: "The next-generation video streaming platform. Watch, upload, and go live.",
-  themeColor: "#070A12",
+  title: { default: "CINEVIEW — Watch & Stream", template: "%s | CINEVIEW" },
+  description: "High-fidelity cinematic video streaming and live-content platform.",
+  themeColor: "#080a0f",
 };
 
 export default function RootLayout({
@@ -21,10 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">
-        <ToastProvider>{children}</ToastProvider>
+    <html lang="en" className={`${manrope.variable} dark`}>
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+      </head>
+      <body className="font-body-md bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container antialiased">
+        <ToastProvider>
+          <AppLayout>{children}</AppLayout>
+        </ToastProvider>
       </body>
     </html>
   );
 }
+

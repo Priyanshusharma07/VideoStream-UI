@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { StreamHubLogo } from "@/components/StreamHubLogo";
+import { CineViewLogo } from "@/components/StreamHubLogo";
 import {
   AppleIcon,
   EyeIcon,
@@ -71,178 +71,147 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#070A12] px-5 py-12 text-white">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-purple-600/30 blur-3xl" />
-        <div className="absolute -right-24 -top-10 h-96 w-96 rounded-full bg-cyan-400/20 blur-3xl" />
-        <div className="absolute -bottom-32 left-1/3 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/50" />
+    <div className="min-h-screen bg-[#080a0f] flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/demo/thumbs/thumb-01.svg"
+          alt="Background"
+          fill
+          className="object-cover opacity-20 grayscale-[0.5]"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080a0f] via-transparent to-[#080a0f]" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] -mr-48 -mt-48" />
       </div>
 
-      <div className="w-full max-w-md">
-        <div className="mb-8">
-          <StreamHubLogo />
-        </div>
+      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-[5vw] py-8">
+        <CineViewLogo />
+      </header>
 
-        <div className="rounded-2xl border border-white/10 bg-black/35 p-7 shadow-[0_30px_80px_rgba(0,0,0,0.65)] backdrop-blur">
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">Welcome Back</h1>
-            <p className="mt-1 text-sm text-white/55">
-              Experience cinema in high definition
-            </p>
+      <main className="relative z-10 w-full max-w-md px-6">
+        <div className="glass-panel p-10 rounded-[2.5rem] shadow-2xl border-white/5">
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Welcome Back</h1>
+            <p className="text-sm text-white/40 font-medium">The stories you love are waiting.</p>
           </div>
 
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <div>
-              <label className="mb-2 block text-xs font-medium text-white/70">
-                Email Address
+          <form className="space-y-6" onSubmit={onSubmit}>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">
+                Account Email
               </label>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                autoComplete="email"
-                placeholder="name@example.com"
-                className="w-full rounded-lg bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-orange-500/70"
-                aria-invalid={Boolean(fieldErrors.email)}
-                aria-describedby={fieldErrors.email ? "email-error" : undefined}
-              />
-              {fieldErrors.email ? (
-                <p id="email-error" className="mt-2 text-xs text-red-300/90">
-                  {fieldErrors.email}
-                </p>
-              ) : null}
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors">mail</span>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="name@cineview.com"
+                  className="w-full h-14 bg-white/5 border border-white/5 rounded-2xl pl-12 pr-4 text-white text-sm font-medium outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
+                />
+              </div>
             </div>
 
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="block text-xs font-medium text-white/70">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">
                   Password
                 </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-white/50 hover:text-white/70"
-                >
-                  Forgot Password?
+                <Link href="/forgot-password" title="Recover Password" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">
+                  Forgot?
                 </Link>
               </div>
-              <div className="relative">
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary transition-colors">lock</span>
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full rounded-lg bg-white/5 px-4 py-3 pr-11 text-sm text-white placeholder:text-white/35 outline-none ring-1 ring-white/10 transition focus:ring-2 focus:ring-orange-500/70"
-                  aria-invalid={Boolean(fieldErrors.password)}
-                  aria-describedby={fieldErrors.password ? "password-error" : undefined}
+                  className="w-full h-14 bg-white/5 border border-white/5 rounded-2xl pl-12 pr-12 text-white text-sm font-medium outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-white/55 hover:bg-white/5 hover:text-white/75"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOffIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
+                  <span className="material-symbols-outlined text-lg">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
                 </button>
               </div>
-              {fieldErrors.password ? (
-                <p id="password-error" className="mt-2 text-xs text-red-300/90">
-                  {fieldErrors.password}
-                </p>
-              ) : null}
             </div>
 
-            {error ? (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            {error && (
+              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-[11px] font-black text-red-400 uppercase tracking-widest text-center">
                 {error}
               </div>
-            ) : null}
-            {success ? (
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-                {success}
-              </div>
-            ) : null}
+            )}
 
             <button
               type="submit"
               disabled={isPending}
-              className="mt-1 inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#FF6A00] text-sm font-semibold text-white shadow-[0_10px_30px_rgba(255,106,0,0.25)] transition hover:bg-[#ff7b1f] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full h-14 bg-white text-black font-black text-sm rounded-2xl hover:brightness-90 transition-all disabled:opacity-50 shadow-lg shadow-white/5"
             >
-              {isPending ? "Signing In..." : "SIGN IN"}
+              {isPending ? "SIGNING IN..." : "SIGN IN"}
             </button>
-
-            <div className="pt-2">
-              <div className="flex items-center gap-3 text-xs text-white/35">
-                <span className="h-px flex-1 bg-white/10" />
-                <span>OR CONTINUE WITH</span>
-                <span className="h-px flex-1 bg-white/10" />
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast.push({
-                      variant: "info",
-                      title: "Google sign-in",
-                      message: "Coming soon (demo).",
-                    })
-                  }
-                  className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
-                  aria-label="Continue with Google"
-                >
-                  <GoogleIcon className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast.push({
-                      variant: "info",
-                      title: "Apple sign-in",
-                      message: "Coming soon (demo).",
-                    })
-                  }
-                  className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
-                  aria-label="Continue with Apple"
-                >
-                  <AppleIcon className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast.push({
-                      variant: "info",
-                      title: "Facebook sign-in",
-                      message: "Coming soon (demo).",
-                    })
-                  }
-                  className="inline-flex h-10 items-center justify-center rounded-lg bg-white/5 text-white/70 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white"
-                  aria-label="Continue with Facebook"
-                >
-                  <FacebookIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/55">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-teal-300 hover:underline">
-              SignUp
+          <div className="mt-10 flex items-center gap-4">
+            <div className="h-px flex-1 bg-white/5"></div>
+            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">OR</span>
+            <div className="h-px flex-1 bg-white/5"></div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            <button
+              onClick={() => toast.push({ variant: "info", title: "Coming soon" })}
+              className="h-14 rounded-2xl glass-panel border-white/5 flex items-center justify-center hover:bg-white/5 transition-all group"
+            >
+              <GoogleIcon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" />
+            </button>
+            <button
+              onClick={() => toast.push({ variant: "info", title: "Coming soon" })}
+              className="h-14 rounded-2xl glass-panel border-white/5 flex items-center justify-center hover:bg-white/5 transition-all group"
+            >
+              <AppleIcon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </div>
+          
+          <p className="mt-8 text-center text-[10px] font-black text-white/20 uppercase tracking-[0.1em]">
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-primary hover:underline">
+              Create one here
             </Link>
           </p>
+          
+          <div className="mt-10 p-4 rounded-2xl border border-white/5 bg-white/2 text-center">
+            <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
+              Demo Access
+            </p>
+            <p className="mt-1 text-[11px] font-bold text-white/60">
+              demo@cineview.com / demo1234
+            </p>
+          </div>
         </div>
 
-        <p className="mt-4 text-center text-xs text-white/30">
-          Demo login: <span className="text-white/50">demo@streamhub.com</span> /{" "}
-          <span className="text-white/50">demo1234</span>
-        </p>
+        <footer className="mt-12 text-center max-w-[280px] mx-auto">
+          <p className="text-[9px] font-black text-white/20 uppercase tracking-widest leading-relaxed">
+            By continuing, you agree to CINEVIEW's 
+            <Link className="text-white/40 hover:text-primary mx-1" href="#">Terms</Link> & 
+            <Link className="text-white/40 hover:text-primary mx-1" href="#">Privacy</Link>.
+          </p>
+        </footer>
+      </main>
+
+      <div className="hidden lg:flex fixed bottom-8 left-8 items-center gap-3">
+        <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+        <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">IMAX® ENHANCED EXPERIENCE</span>
       </div>
     </div>
   );
 }
+
+import Image from "next/image";
+

@@ -9,7 +9,7 @@ const STORAGE_KEY = "streamhub.auth";
 function safeParseJson(value: string | null): unknown {
   if (!value) return null;
   try {
-    return JSON.parse(value) as unknown;
+    return JSON.parse(value);
   } catch {
     return null;
   }
@@ -31,11 +31,13 @@ export function clearAuthSession() {
 
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;
+
   const raw = window.localStorage.getItem(STORAGE_KEY);
   const json = safeParseJson(raw);
+
   if (!isRecord(json)) return null;
+
   return typeof json.accessToken === "string" && json.accessToken.trim()
     ? json.accessToken
     : null;
 }
-
