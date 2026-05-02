@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { UploadIcon, VideoIcon, CheckCircleIcon } from "@/components/icons";
 import { useToast } from "@/components/ui/ToastProvider";
 import { uploadVideo } from "@/services/video.service";
+import { getAccessToken } from "@/lib/auth-session";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,6 +100,9 @@ export default function UploadPage() {
     abortRef.current = controller;
 
     try {
+      // Get token from localStorage (Paseto)
+      const token = getAccessToken();
+
       const parsedTags = tags
         .split(",")
         .map((t) => t.trim())
@@ -110,6 +114,7 @@ export default function UploadPage() {
         description: description.trim() || undefined,
         tags: parsedTags.length > 0 ? parsedTags : undefined,
         isPublic: visibility === "public",
+        token,
         signal: controller.signal,
         onProgress: (currentPhase, pct) => {
           setPhase(currentPhase);

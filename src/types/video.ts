@@ -10,5 +10,7 @@ export interface Video {
   channelName: string;
   category: string;
   isPremium: boolean;
+  creator?: {
+    name: string;
+  };
 }
-

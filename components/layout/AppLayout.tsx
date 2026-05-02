@@ -28,7 +28,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <AppSidebar activePath={pathname} />
       <AppBottomNav activePath={pathname} />
 
-      <main className="lg:ml-20 pt-20 transition-all duration-300">
+      <main className="lg:ml-20 pt-24 transition-all duration-300">
         {children}
       </main>
     </div>

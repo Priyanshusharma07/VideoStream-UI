@@ -10,6 +10,7 @@ type Props = {
   initialHlsPath: string | null;
   apiBase: string;
   poster?: string | null;
+  autoPlay?: boolean;
   onFirstPlay?: () => void;
 };
 
@@ -22,6 +23,7 @@ export function VideoPlayer({
   initialHlsPath,
   apiBase,
   poster,
+  autoPlay = true,
   onFirstPlay,
 }: Props) {
   const [status, setStatus] = useState(initialStatus);
@@ -116,7 +118,7 @@ export function VideoPlayer({
     <HlsPlayer
       src={hlsSrc}
       poster={poster ?? undefined}
-      autoPlay={false}
+      autoPlay={autoPlay}
       onFirstPlay={onFirstPlay}
     />
   );

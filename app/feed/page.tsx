@@ -3,9 +3,10 @@ import Image from "next/image";
 import { getFeed } from "@/services/feed-client";
 import type { FeedPayload } from "@/types/content";
 import { VideoCard } from "@/components/video/VideoCard";
+import { FeedErrorRetry } from "./FeedErrorRetry";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "CINEGLAS Feed" };
+export const metadata = { title: "CINEVIEW — Feed" };
 
 // Helpers
 function safeUrl(url: string | null | undefined) {
@@ -48,7 +49,7 @@ export default async function FeedPage() {
           <span className="material-symbols-outlined text-5xl text-primary mb-4">error</span>
           <h2 className="text-2xl font-bold text-white mb-2">Could not load feed</h2>
           <p className="text-white/50 mb-8">{result.error.message}</p>
-          <button onClick={() => window.location.reload()} className="bg-primary text-black px-8 py-3 rounded-2xl font-bold">Try Again</button>
+          <FeedErrorRetry />
         </div>
       </div>
     );
@@ -63,7 +64,7 @@ export default async function FeedPage() {
     <div className="pb-32">
       {/* Hero Section */}
       {hero && (
-        <section className="relative h-[650px] w-full overflow-hidden mb-12">
+        <section className="relative h-[500px] lg:h-[600px] w-full overflow-hidden mb-12">
           <div className="absolute inset-0 z-0">
             <Image 
               src={hero.thumbnailUrl || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"} 
@@ -193,11 +194,6 @@ export default async function FeedPage() {
           </div>
         </section>
       </div>
-
-      <Link href="/upload" className="fixed bottom-12 right-12 z-50 bg-primary text-black w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all">
-        <span className="material-symbols-outlined text-3xl font-black">add</span>
-      </Link>
-
     </div>
   );
 }

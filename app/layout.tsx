@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} dark`}>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
       </head>
       <body className="font-body-md bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container antialiased">
         <ToastProvider>
@@ -34,4 +34,3 @@ export default function RootLayout({
     </html>
   );
 }
-

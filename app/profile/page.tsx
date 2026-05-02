@@ -102,7 +102,7 @@ export default function ProfilePage() {
         {/* Bio */}
         <div className="max-w-3xl glass-panel p-8 rounded-[2rem] mb-12">
           <p className="text-white/60 font-medium leading-relaxed italic">
-            "{PROFILE_DATA.bio}"
+            &ldquo;{PROFILE_DATA.bio}&rdquo;
           </p>
         </div>
 
