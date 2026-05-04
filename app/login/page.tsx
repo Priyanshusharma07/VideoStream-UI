@@ -59,11 +59,17 @@ export default function LoginPage() {
         setError(result.error?.message ?? "Invalid credentials.");
         return;
       }
-      const token = result.data.accessToken ?? result.data.access_token;
+      const token = result.data.accessToken ?? (result.data as any).access_token;
+      const userData = (result.data as any).user;
       if (token) {
-        saveAuthSession({ accessToken: token });
+        saveAuthSession({
+          accessToken: token,
+          name: userData?.name ?? undefined,
+          email: userData?.email ?? email.trim(),
+        });
       }
-      router.push("/feed");
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/feed';
+      router.push(redirectTo);
     });
   }
 

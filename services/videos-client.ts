@@ -45,33 +45,35 @@ export async function addVideoComment(videoId: number, text: string) {
 
 // ─── LIVE STREAMING ─────────────────────────────────────────────────────────
 
-export async function startLiveStream(data: { title: string; category: string }) {
+export async function startLiveStream(dto: { title: string; category: string }) {
   const headers = authHeaders();
-  if (!headers) throw new Error("Authentication required");
-
-  return postApi<any, any>(`/live-stream/start`, data, { headers });
+  return postApi<{ videoId: number; streamKey: string; streamUrl: string }>(
+    "/videos/live/start",
+    dto,
+    { headers: headers ?? undefined }
+  );
 }
 
 export async function endLiveStream(videoId: number | string) {
   const headers = authHeaders();
-  if (!headers) throw new Error("Authentication required");
-
-  return postApi<any, any>(`/live-stream/end/${encodeVideoId(videoId)}`, {}, { headers });
+  return postApi<{ success: boolean }>(
+    `/videos/live/end/${encodeVideoId(videoId)}`,
+    {},
+    { headers: headers ?? undefined }
+  );
 }
 
-export async function updateLiveSignal(videoId: number | string, signal: string) {
+export async function getJoinToken(videoId: number | string) {
   const headers = authHeaders();
-  if (!headers) throw new Error("Authentication required");
-
-  return patchApi<any, any>(`/live-stream/signal/${encodeVideoId(videoId)}`, { signal }, { headers });
-}
-
-export async function submitViewerSignal(videoId: number | string, signal: string) {
-  return patchApi<any, any>(`/live-stream/viewer-signal/${encodeVideoId(videoId)}`, { signal });
+  // Optional auth: viewers can be guests
+  return getApi<{ token: string; roomName: string; liveKitUrl: string }>(
+    `/videos/live/join/${encodeVideoId(videoId)}`, 
+    { headers: headers ?? undefined, cache: "no-store" }
+  );
 }
 
 export async function getLiveVideos() {
-  return getApi<any[]>("/live-stream/list", { cache: "no-store" });
+  return getApi<any[]>("/videos/live/list", { cache: "no-store" });
 }
 
 export async function recordView(id: number | string): Promise<void> {

@@ -201,3 +201,70 @@ export async function getApi<Res>(
     };
   }
 }
+
+export async function patchApi<Req, Res>(
+  path: string,
+  input: Req,
+  init?: Omit<RequestInit, "method" | "body">,
+): Promise<ApiResult<Res>> {
+  const url = buildApiUrl(path);
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Network error";
+    return { ok: false, error: { code: "network_error", message } };
+  }
+
+  if (shouldLog()) console.log(`PATCH ${url} - Status: ${res.status}`);
+
+  const rawText = await res.text().catch(() => "");
+  let json: unknown = null;
+  let jsonParseFailed = false;
+  if (rawText) {
+    try {
+      json = JSON.parse(rawText) as unknown;
+    } catch {
+      json = null;
+      jsonParseFailed = true;
+    }
+  }
+
+  if (res.ok && jsonParseFailed) {
+    return {
+      ok: false,
+      error: { code: "bad_response", message: "Invalid JSON response" },
+    };
+  }
+
+  if (!res.ok) {
+    const fallbackError: ApiError = {
+      code: "request_failed",
+      message: res.statusText || "Request failed",
+    };
+
+    const record = isRecord(json) ? json : null;
+    const errorFromJson = record?.error ?? record ?? null;
+    const messageFromJson =
+      typeof record?.message === "string" ? record.message : null;
+
+    return {
+      ok: false,
+      error: coerceApiError(
+        errorFromJson,
+        messageFromJson
+          ? { ...fallbackError, message: messageFromJson }
+          : fallbackError,
+      ),
+    };
+  }
+
+  if (isApiResult(json)) return json as ApiResult<Res>;
+  return { ok: true, data: json as Res };
+}

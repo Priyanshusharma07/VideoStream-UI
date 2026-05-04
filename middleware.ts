@@ -2,47 +2,45 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware to enforce authentication on cinematic routes.
- * Only the Home page (/) and Auth pages are public.
- * All other actions (watch, upload, dashboard, feed) require login.
+ * Auth Middleware for CINEVIEW
+ *
+ * Public (no login needed):
+ *   /            → home page (browse, but can't play)
+ *   /login
+ *   /signup
+ *   /forgot-password
+ *   /sso-callback
+ *
+ * Protected (login required):
+ *   Everything else: /feed, /watch/*, /upload, /dashboard,
+ *                    /live/*, /profile, /discover, /explore, etc.
  */
+
+const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/forgot-password', '/sso-callback']);
+
+// Paths that start with these prefixes are also public
+const PUBLIC_PREFIXES = ['/api', '/_next', '/static'];
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Define Public Paths
-  const isPublicPath = 
-    pathname === '/' || 
-    pathname === '/login' || 
-    pathname === '/signup' || 
-    pathname === '/forgot-password';
+  // Always allow assets
+  const isAsset = PUBLIC_PREFIXES.some(p => pathname.startsWith(p)) || pathname.includes('.');
+  if (isAsset) return NextResponse.next();
 
-  // 2. Define Assets/Static Paths (always public)
-  const isAssetPath = 
-    pathname.startsWith('/_next') || 
-    pathname.startsWith('/api') || 
-    pathname.startsWith('/static') || 
-    pathname.includes('.') || // matches images, favicon, etc.
-    pathname === '/favicon.ico';
-
-  if (isAssetPath) {
-    return NextResponse.next();
-  }
-
-  // 3. Check for Token Cookie
+  const isPublicPath = PUBLIC_PATHS.has(pathname);
   const token = request.cookies.get('cineview_token')?.value;
 
-  // 4. Protection Logic
-  if (!token && !isPublicPath) {
-    // Redirect to login if trying to access protected content while unauthenticated
-    const url = new URL('/login', request.url);
-    // Optional: add a 'from' param to redirect back after login
-    url.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(url);
+  // Logged-in user trying to access auth pages → redirect to feed
+  if (token && (pathname === '/login' || pathname === '/signup')) {
+    return NextResponse.redirect(new URL('/feed', request.url));
   }
 
-  if (token && (pathname === '/login' || pathname === '/signup')) {
-    // Redirect to feed if already logged in and trying to access auth pages
-    return NextResponse.redirect(new URL('/feed', request.url));
+  // Not logged in, on a protected route → redirect to login
+  if (!token && !isPublicPath) {
+    const url = new URL('/login', request.url);
+    url.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
@@ -50,13 +48,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };

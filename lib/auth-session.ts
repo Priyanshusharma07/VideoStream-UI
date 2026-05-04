@@ -9,6 +9,8 @@ export type AuthSession = {
   accessToken: string;
   refreshToken?: string;
   expiresAt?: string;
+  name?: string;
+  email?: string;
 };
 
 const STORAGE_KEY = 'streamhub.auth';
