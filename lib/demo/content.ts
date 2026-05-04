@@ -34,6 +34,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[1],
         viewsLabel: "1.3k watching",
         uploadedLabel: "Live now",
+        status: "live",
       },
       {
         id: "v-tr-2",
@@ -45,6 +46,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[0],
         viewsLabel: "420k views",
         uploadedLabel: "2 days ago",
+        status: "ready",
       },
       {
         id: "v-tr-3",
@@ -56,6 +58,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[5],
         viewsLabel: "2.1M views",
         uploadedLabel: "1 week ago",
+        status: "ready",
       },
       {
         id: "v-live-2",
@@ -66,6 +69,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[2],
         viewsLabel: "850 watching",
         uploadedLabel: "Live now",
+        status: "live",
       },
     ],
     forYouFilters: ["All", "Gaming", "Music", "Movies"],
@@ -80,6 +84,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[0],
         viewsLabel: "89k views",
         uploadedLabel: "2 days ago",
+        status: "ready",
       },
       {
         id: "v-2",
@@ -91,6 +96,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[1],
         viewsLabel: "1.2k watching",
         uploadedLabel: "Live now",
+        status: "live",
       },
       {
         id: "v-3",
@@ -102,6 +108,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[2],
         viewsLabel: "210k views",
         uploadedLabel: "1 week ago",
+        status: "ready",
       },
       {
         id: "v-4",
@@ -113,6 +120,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[3],
         viewsLabel: "1.5M views",
         uploadedLabel: "4 days ago",
+        status: "ready",
       },
       {
         id: "v-5",
@@ -124,6 +132,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[4],
         viewsLabel: "670k views",
         uploadedLabel: "2 days ago",
+        status: "ready",
       },
       {
         id: "v-6",
@@ -135,6 +144,7 @@ export function getDemoFeed(): FeedPayload {
         creator: creators[5],
         viewsLabel: "45k watching",
         uploadedLabel: "Live now",
+        status: "live",
       },
     ],
     subscriptions: DEMO_SUBSCRIPTIONS,
@@ -180,10 +190,14 @@ export function getDemoVideoDetails(id: string): VideoDetailsPayload {
         },
       ],
     },
+    playback: {
+      status: "ready",
+    },
   };
 }
 
 export function getDemoDashboard(): DashboardPayload {
+  const feed = getDemoFeed();
   return {
     user: {
       name: "Alex Rivera",
@@ -191,42 +205,11 @@ export function getDemoDashboard(): DashboardPayload {
       avatarUrl: "/demo/avatars/avatar-01.svg",
       planName: "StreamHub Pro",
     },
-    stats: [
-      {
-        id: "views",
-        label: "Total Video Views",
-        value: "1.2M",
-        deltaLabel: "+12.5% this week",
-      },
-      {
-        id: "engagement",
-        label: "Total Engagement",
-        value: "85.4K",
-        deltaLabel: "+4.2% this week",
-      },
-    ],
-    recentHistory: [
-      {
-        id: "h1",
-        title: "Mastering Cinematic Lighting in 2024",
-        meta: "Visual Arts Mastery • 1.2M views • 2 days ago",
-        thumbnailUrl: "/demo/thumbs/thumb-03.svg",
-        progress: 0.88,
-      },
-      {
-        id: "h2",
-        title: "UI Design Trends that actually work",
-        meta: "Design Lab • 450K views • 5 days ago",
-        thumbnailUrl: "/demo/thumbs/thumb-04.svg",
-        progress: 0.62,
-      },
-      {
-        id: "h3",
-        title: "Exploring Deep Space: New Horizon",
-        meta: "SpaceX Unofficial • 3M views • 1 week ago",
-        thumbnailUrl: "/demo/thumbs/thumb-01.svg",
-        progress: 0.35,
-      },
-    ],
+    stats: {
+      totalViews: "1.2M",
+      totalLikes: "85.4K",
+      totalVideos: feed.forYou.length,
+    },
+    videos: feed.forYou,
   };
 }

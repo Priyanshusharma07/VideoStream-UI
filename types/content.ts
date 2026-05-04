@@ -18,6 +18,10 @@ export type Video = {
   viewsLabel: string;
   uploadedLabel: string;
   isPremium?: boolean;
+  status: string;
+  description?: string;
+  tags?: string[];
+  likesLabel?: string;
 };
 
 export type FeedPayload = {

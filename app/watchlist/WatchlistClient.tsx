@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useWatchlist } from "@/src/hooks/useWatchlist";
-import type { Video } from "@/src/types/video";
 import { getVideoById } from "@/src/services/videoService";
 import { VideoCard } from "@/components/video/VideoCard";
+import type { Video } from "@/types/content";
 
 type Item = { id: string; video: Video | null };
 
@@ -26,7 +26,29 @@ export function WatchlistClient() {
     async function load() {
       setLoading(true);
       const loaded = await Promise.all(
-        ids.map(async (id): Promise<Item> => ({ id, video: await getVideoById(id) })),
+        ids.map(async (id): Promise<Item> => {
+          const v = await getVideoById(id);
+          if (!v) return { id, video: null };
+          
+          // Map legacy to new Video type
+          const mapped: Video = {
+            id: v.id,
+            title: v.title,
+            thumbnailUrl: v.thumbnailUrl,
+            kind: "video",
+            category: v.category,
+            creator: {
+              id: "legacy",
+              name: v.channelName,
+              avatarUrl: "/demo/avatars/avatar-01.svg"
+            },
+            viewsLabel: `${(v.views / 1000).toFixed(1)}K`,
+            uploadedLabel: "Some time ago",
+            status: "ready",
+            description: v.description
+          };
+          return { id, video: mapped };
+        }),
       );
       if (cancelled) return;
       setItems(loaded);

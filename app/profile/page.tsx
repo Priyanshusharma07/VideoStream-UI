@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { VideoCard } from "@/components/video/VideoCard";
+import type { Video } from "@/types/content";
 import { mockVideos } from "@/src/data/mockVideos";
 
 const PROFILE_DATA = {
@@ -24,7 +25,24 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Videos");
   
   // Filter videos for this "creator" (using Tech as a proxy for his content)
-  const creatorVideos = mockVideos.filter(v => v.category === "Tech" || v.category === "Education");
+  const creatorVideos: Video[] = mockVideos
+    .filter(v => v.category === "Tech" || v.category === "Education")
+    .map(v => ({
+      id: v.id,
+      title: v.title,
+      thumbnailUrl: v.thumbnailUrl,
+      kind: "video",
+      category: v.category,
+      creator: {
+        id: "arjun",
+        name: PROFILE_DATA.name,
+        avatarUrl: PROFILE_DATA.avatarUrl
+      },
+      viewsLabel: `${(v.views / 1000).toFixed(1)}K`,
+      uploadedLabel: "2 months ago",
+      status: "ready",
+      description: v.description
+    }));
 
   return (
     <div className="min-h-screen">

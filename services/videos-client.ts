@@ -40,14 +40,14 @@ export async function addVideoComment(videoId: number, text: string) {
   const headers = authHeaders();
   if (!headers) throw new Error("Authentication required");
 
-  return postApi<any, any>(`/videos/${videoId}/comments`, { text }, { headers });
+  return postApi<{ text: string }, any>(`/videos/${videoId}/comments`, { text }, { headers });
 }
 
 // ─── LIVE STREAMING ─────────────────────────────────────────────────────────
 
 export async function startLiveStream(dto: { title: string; category: string }) {
   const headers = authHeaders();
-  return postApi<{ videoId: number; streamKey: string; streamUrl: string }>(
+  return postApi<{ title: string; category: string }, { videoId: number; streamKey: string; streamUrl: string }>(
     "/videos/live/start",
     dto,
     { headers: headers ?? undefined }
@@ -56,7 +56,7 @@ export async function startLiveStream(dto: { title: string; category: string }) 
 
 export async function endLiveStream(videoId: number | string) {
   const headers = authHeaders();
-  return postApi<{ success: boolean }>(
+  return postApi<Record<string, never>, { success: boolean }>(
     `/videos/live/end/${encodeVideoId(videoId)}`,
     {},
     { headers: headers ?? undefined }
@@ -91,12 +91,12 @@ export async function likeVideo(id: number | string): Promise<ApiResult<{ liked:
   const headers = authHeaders();
   if (!headers) return { ok: false, error: { code: "unauthorized", message: "Log in required" } };
   
-  return postApi<any, any>(`/videos/${encodeVideoId(id)}/like`, {}, { headers });
+  return postApi<Record<string, never>, { liked: boolean, count: number }>(`/videos/${encodeVideoId(id)}/like`, {}, { headers });
 }
 
 export async function unlikeVideo(id: number | string): Promise<ApiResult<{ liked: boolean, count: number }>> {
   const headers = authHeaders();
   if (!headers) return { ok: false, error: { code: "unauthorized", message: "Log in required" } };
   
-  return postApi<any, any>(`/videos/${encodeVideoId(id)}/unlike`, {}, { headers });
+  return postApi<Record<string, never>, { liked: boolean, count: number }>(`/videos/${encodeVideoId(id)}/unlike`, {}, { headers });
 }
