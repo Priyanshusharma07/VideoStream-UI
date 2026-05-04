@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { HlsPlayer } from "@/components/video/HlsPlayer";
-import { pollVideoStatus } from "@/services/videos-client";
+import { pollVideoStatus, submitViewerSignal } from "@/services/videos-client";
 
 type Props = {
   videoId: string | number;
@@ -28,11 +28,46 @@ export function VideoPlayer({
 }: Props) {
   const [status, setStatus] = useState(initialStatus);
   const [hlsPath, setHlsPath] = useState<string | null>(initialHlsPath);
+  const [useWebRTC, setUseWebRTC] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const pcRef = useRef<RTCPeerConnection | null>(null);
   const pollCount = useRef(0);
 
+  async function initWebRTC(signal: string) {
+    try {
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+      });
+      pcRef.current = pc;
+
+      pc.ontrack = (event) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = event.streams[0];
+        }
+      };
+
+      const offer = JSON.parse(signal);
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      // Send answer back
+      await submitViewerSignal(videoId, JSON.stringify(answer));
+      setUseWebRTC(true);
+    } catch (err) {
+      console.error("WebRTC Connection failed:", err);
+    }
+  }
+
   useEffect(() => {
-    // Already ready — nothing to poll
-    if (status === "ready" && hlsPath) return;
+    // If it's live and has a signal, try WebRTC first for real camera feed
+    // We check for broadcastSignal via a separate detail fetch if needed, 
+    // but usually it's passed in playback info or video details.
+    // For now, we'll assume it might come from the poll or initial details.
+    
+    // Already ready or live — nothing to poll
+    if ((status === "ready" || status === "live") && hlsPath) return;
     // Terminal failures — stop
     if (status === "failed") return;
 
@@ -46,7 +81,12 @@ export function VideoPlayer({
       const result = await pollVideoStatus(videoId);
       if (!result.ok) return;
 
-      const { status: s, hlsManifestPath } = result.data;
+      const { status: s, hlsManifestPath, broadcastSignal } = result.data;
+      
+      if (s === "live" && broadcastSignal && !useWebRTC) {
+        initWebRTC(broadcastSignal);
+      }
+
       setStatus(s);
       if (hlsManifestPath) setHlsPath(hlsManifestPath);
       if (s === "ready" || s === "failed") clearInterval(timer);
@@ -63,6 +103,22 @@ export function VideoPlayer({
       : `${apiBase.replace(/\/+$/, "")}${hlsPath}`;
 
   // ── Rendering ──────────────────────────────────────────────────────────────
+
+  if (useWebRTC) {
+    return (
+      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-black">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute left-4 top-4 rounded-lg bg-red-600 px-2 py-1 text-[10px] font-bold text-white shadow-lg">
+          REAL-TIME FEED
+        </div>
+      </div>
+    );
+  }
 
   if (status === "failed") {
     return (

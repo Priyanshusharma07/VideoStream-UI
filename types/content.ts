@@ -17,6 +17,7 @@ export type Video = {
   creator: Creator;
   viewsLabel: string;
   uploadedLabel: string;
+  isPremium?: boolean;
 };
 
 export type FeedPayload = {
@@ -32,6 +33,7 @@ export type VideoDetailsPayload = {
     description: string;
     tags: string[];
     likesLabel: string;
+    status: string;
   };
   chat: {
     viewersLabel: string;
@@ -42,6 +44,10 @@ export type VideoDetailsPayload = {
       highlighted?: boolean;
     }>;
   };
+  playback: {
+    hlsManifestPath?: string | null;
+    status: string;
+  };
 };
 
 export type DashboardPayload = {
@@ -51,17 +57,10 @@ export type DashboardPayload = {
     avatarUrl: string;
     planName: string;
   };
-  stats: Array<{
-    id: string;
-    label: string;
-    value: string;
-    deltaLabel: string;
-  }>;
-  recentHistory: Array<{
-    id: string;
-    title: string;
-    meta: string;
-    thumbnailUrl: string;
-    progress: number;
-  }>;
+  stats: {
+    totalViews: string;
+    totalLikes: string;
+    totalVideos: number;
+  };
+  videos: Video[];
 };

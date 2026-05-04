@@ -6,6 +6,7 @@ import { VideoDescription } from "@/components/watch/VideoDescription";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { getVideoDetails, recordView } from "@/services/videos-client";
 import { CreatorActions } from "@/components/watch/CreatorActions";
+import { CommentsSection } from "@/components/watch/CommentsSection";
 
 
 export const dynamic = "force-dynamic";
@@ -137,6 +138,12 @@ export default async function WatchPage({
                 <VideoDescription text={v.description} />
              </div>
           </div>
+
+          {/* Comments Section */}
+          <CommentsSection 
+            videoId={id} 
+            initialComments={chat.messages} 
+          />
         </section>
 
         {/* Right: Chat / Sidebar */}
@@ -153,6 +160,7 @@ export default async function WatchPage({
             </div>
             <div className="flex-1 overflow-hidden">
               <ChatPanel
+                videoId={id}
                 initialMessages={chat.messages}
                 viewersLabel={chat.viewersLabel}
               />

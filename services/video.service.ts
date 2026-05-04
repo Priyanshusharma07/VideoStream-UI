@@ -53,6 +53,7 @@ export interface UploadVideoOptions {
   file: File;
   title: string;
   description?: string;
+  category?: string;
   tags?: string[];
   isPublic?: boolean;
   token?: string | null;
@@ -197,13 +198,14 @@ async function uploadToS3(
  * Calls POST /videos to create the video DB record.
  *
  * Backend DTO (CreateVideoDto) expects:
- *   { title, fileKey, description?, tags?, isPublic? }
+ *   { title, fileKey, description?, tags?, isPublic?, category? }
  */
 export async function confirmUpload(
   params: {
     title: string;
     fileKey: string;
     description?: string;
+    category?: string;
     tags?: string[];
     isPublic?: boolean;
   },
@@ -216,6 +218,7 @@ export async function confirmUpload(
     fileKey: params.fileKey,
   };
   if (params.description) body.description = params.description;
+  if (params.category) body.category = params.category;
   if (params.tags && params.tags.length > 0) body.tags = params.tags;
   if (typeof params.isPublic === 'boolean') body.isPublic = params.isPublic;
 
@@ -251,7 +254,7 @@ export async function confirmUpload(
  *   3. POST /videos             → confirm upload, create DB record
  */
 export async function uploadVideo(options: UploadVideoOptions): Promise<CreateVideoResponse> {
-  const { file, title, description, tags, isPublic = true, signal } = options;
+  const { file, title, description, category, tags, isPublic = true, signal } = options;
   const token = requireToken(options.token);
 
   // Phase 1 — get presigned URL
@@ -276,6 +279,7 @@ export async function uploadVideo(options: UploadVideoOptions): Promise<CreateVi
       title,
       fileKey: urlData.videoKey,
       description,
+      category,
       tags,
       isPublic,
     },

@@ -1,43 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getFeed } from "@/services/feed-client";
-import type { FeedPayload } from "@/types/content";
 import { VideoCard } from "@/components/video/VideoCard";
 import { FeedErrorRetry } from "./FeedErrorRetry";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "CINEVIEW — Feed" };
-
-// Helpers
-function safeUrl(url: string | null | undefined) {
-  return (typeof url === "string" ? url.trim() : "") || "";
-}
-
-function normalizeCreator(c: FeedPayload["subscriptions"][number] | null | undefined) {
-  return {
-    id: c?.id ?? "unknown",
-    name: c?.name?.trim() ? c.name : "Unknown",
-    avatarUrl: safeUrl(c?.avatarUrl),
-    isLive: c?.isLive,
-  };
-}
-
-function normalizeFeed(feed: FeedPayload): FeedPayload {
-  return {
-    ...feed,
-    subscriptions: (feed.subscriptions ?? []).map(normalizeCreator),
-    trending: (feed.trending ?? []).map((v) => ({
-      ...v,
-      thumbnailUrl: safeUrl(v.thumbnailUrl),
-      creator: normalizeCreator(v.creator),
-    })),
-    forYou: (feed.forYou ?? []).map((v) => ({
-      ...v,
-      thumbnailUrl: safeUrl(v.thumbnailUrl),
-      creator: normalizeCreator(v.creator),
-    })),
-  };
-}
 
 export default async function FeedPage() {
   const result = await getFeed();
@@ -55,7 +23,7 @@ export default async function FeedPage() {
     );
   }
 
-  const feed = normalizeFeed(result.data);
+  const feed = result.data;
   const [hero, ...trendingRest] = feed.trending;
   const trendingGrid = trendingRest.slice(0, 4);
   const forYouList = feed.forYou.slice(0, 12);
@@ -95,7 +63,7 @@ export default async function FeedPage() {
               {hero.title}
             </h1>
             <p className="text-lg text-white/70 mb-8 max-w-2xl line-clamp-3 font-medium leading-relaxed">
-              {(hero as any).description || "Experience the next evolution of digital storytelling. A masterpiece of visual fidelity and emotional depth."}
+              {hero.description || "Experience the next evolution of digital storytelling. A masterpiece of visual fidelity and emotional depth."}
             </p>
             <div className="flex items-center gap-4">
               <Link href={`/watch/${hero.id}`} className="bg-primary text-black px-10 py-4 rounded-2xl font-black flex items-center gap-3 shadow-lg shadow-primary/20 hover:scale-105 transition-all">
@@ -129,7 +97,7 @@ export default async function FeedPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {trendingGrid.map((v) => (
-                <VideoCard key={v.id} video={v as any} />
+                <VideoCard key={v.id} video={v} />
               ))}
             </div>
           </section>
@@ -149,7 +117,7 @@ export default async function FeedPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {forYouList.map((v) => (
-                <VideoCard key={v.id} video={v as any} />
+                <VideoCard key={v.id} video={v} />
               ))}
             </div>
           </section>
@@ -158,14 +126,14 @@ export default async function FeedPage() {
         {/* Categories / Promo Section */}
         <section>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Link href="/explore?cat=originals" className="glass-panel rounded-[2.5rem] p-10 flex flex-col justify-between group hover:border-primary/40 transition-all cursor-pointer relative overflow-hidden">
+            <Link href="/explore?cat=cinema" className="glass-panel rounded-[2.5rem] p-10 flex flex-col justify-between group hover:border-primary/40 transition-all cursor-pointer relative overflow-hidden">
               <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all" />
               <div>
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 border border-primary/20">
                   <span className="material-symbols-outlined text-primary text-4xl">workspace_premium</span>
                 </div>
                 <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Original Series</h3>
-                <p className="text-white/50 text-sm font-medium leading-relaxed">Exclusive content created only for CINEGLAS subscribers.</p>
+                <p className="text-white/50 text-sm font-medium leading-relaxed">Exclusive content created only for CINEVIEW subscribers.</p>
               </div>
               <div className="flex -space-x-3 mt-10">
                 {[1,2,3,4].map(i => (
@@ -197,4 +165,3 @@ export default async function FeedPage() {
     </div>
   );
 }
-

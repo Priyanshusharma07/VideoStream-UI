@@ -9,7 +9,8 @@ type SearchItem = {
   id: string;
   title: string;
   year?: number;
-  kind: "movie" | "show" | "live";
+  kind: "video" | "live";
+  category: string;
 };
 
 const CATEGORIES = [
@@ -44,30 +45,33 @@ function ExploreInner({ initialQ, initialCat }: { initialQ: string; initialCat: 
 
   const canSearch = useMemo(() => query.trim().length >= 2, [query]);
 
-  const doSearch = useCallback((q: string) => {
+  const doSearch = useCallback((q: string, cat: string = "all") => {
     startTransition(async () => {
       setError(null);
       setHasSearched(true);
-      const payload = await getApi<{ items: SearchItem[] }>(`/search?q=${encodeURIComponent(q)}`);
+      const url = `/videos/search?q=${encodeURIComponent(q)}&cat=${encodeURIComponent(cat)}`;
+      const payload = await getApi<{ items: SearchItem[] }>(url);
       if (!payload.ok) { setError(payload.error.message); return; }
       setResults(Array.isArray(payload.data.items) ? payload.data.items : []);
     });
   }, []);
 
   useEffect(() => {
-    if (initialQ.length >= 2) doSearch(initialQ);
-  }, [initialQ, doSearch]);
+    if (initialQ.length >= 2 || initialCat !== "all") {
+      doSearch(initialQ, initialCat);
+    }
+  }, [initialQ, initialCat, doSearch]);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const q = query.trim();
-    if (q.length < 2) { setResults([]); return; }
-    doSearch(q);
+    if (q.length < 2 && activeCategory === "all") { setResults([]); return; }
+    doSearch(q, activeCategory);
   }
 
   const handleCategory = (slug: string) => {
     setActiveCategory(slug);
-    if (slug !== "all") router.push(`/explore?cat=${slug}`);
+    router.push(`/explore?q=${encodeURIComponent(query)}&cat=${slug}`);
   };
 
   const showDiscovery = !hasSearched && results.length === 0;
@@ -102,7 +106,7 @@ function ExploreInner({ initialQ, initialCat }: { initialQ: string; initialCat: 
             )}
             <button
               type="submit"
-              disabled={!canSearch || isPending}
+              disabled={isPending}
               className="h-9 px-5 rounded-xl bg-primary-container text-white text-xs font-bold uppercase tracking-wider hover:bg-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex-shrink-0"
             >
               {isPending ? "…" : "Search"}
@@ -145,7 +149,7 @@ function ExploreInner({ initialQ, initialCat }: { initialQ: string; initialCat: 
           {results.length > 0 ? (
             <>
               <p className="text-white/40 text-sm font-medium mb-5">
-                {results.length} result{results.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
+                {results.length} result{results.length !== 1 ? "s" : ""} for &ldquo;{query || activeCategory}&rdquo;
               </p>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((item) => (
@@ -167,6 +171,7 @@ function ExploreInner({ initialQ, initialCat }: { initialQ: string; initialCat: 
                         {item.year && <span className="text-[10px] font-bold text-white/30">{item.year}</span>}
                       </div>
                       <h3 className="text-base font-bold text-white group-hover:text-primary transition-colors leading-snug">{item.title}</h3>
+                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mt-1">{item.category}</p>
                     </div>
                     <div className="mt-5 flex items-center justify-between text-[11px] font-semibold text-white/30">
                       <span>View Details</span>
@@ -243,18 +248,18 @@ function ExploreInner({ initialQ, initialCat }: { initialQ: string; initialCat: 
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {[
-                { label: "Action & Thriller", icon: "local_fire_department", color: "from-red-600/30 to-orange-600/10", border: "border-red-500/20", text: "text-red-400" },
+                { label: "Cinema", icon: "movie", color: "from-red-600/30 to-orange-600/10", border: "border-red-500/20", text: "text-red-400" },
                 { label: "Sci-Fi", icon: "rocket_launch", color: "from-blue-600/30 to-cyan-600/10", border: "border-blue-500/20", text: "text-blue-400" },
                 { label: "Documentary", icon: "camera_roll", color: "from-emerald-600/30 to-teal-600/10", border: "border-emerald-500/20", text: "text-emerald-400" },
                 { label: "Gaming", icon: "sports_esports", color: "from-purple-600/30 to-pink-600/10", border: "border-purple-500/20", text: "text-purple-400" },
                 { label: "Music", icon: "music_note", color: "from-pink-600/30 to-rose-600/10", border: "border-pink-500/20", text: "text-pink-400" },
                 { label: "Sports", icon: "sports_soccer", color: "from-green-600/30 to-lime-600/10", border: "border-green-500/20", text: "text-green-400" },
-                { label: "Tech & Science", icon: "memory", color: "from-sky-600/30 to-indigo-600/10", border: "border-sky-500/20", text: "text-sky-400" },
+                { label: "Tech", icon: "memory", color: "from-sky-600/30 to-indigo-600/10", border: "border-sky-500/20", text: "text-sky-400" },
                 { label: "Animation", icon: "animation", color: "from-yellow-600/30 to-amber-600/10", border: "border-yellow-500/20", text: "text-yellow-400" },
               ].map(({ label, icon, color, border, text }) => (
                 <button
                   key={label}
-                  onClick={() => handleCategory(label.toLowerCase().split(" ")[0])}
+                  onClick={() => handleCategory(label.toLowerCase())}
                   className={`group relative p-5 rounded-2xl bg-gradient-to-br ${color} border ${border} text-left transition-all hover:scale-[1.02] active:scale-[0.98]`}
                 >
                   <span className={`material-symbols-outlined text-[28px] ${text} mb-3 block`}>{icon}</span>

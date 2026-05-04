@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { addVideoComment, getVideoDetails } from "@/services/videos-client";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export type ChatMessage = {
   id: string;
@@ -16,29 +18,66 @@ function badgeLabel(badge: ChatMessage["user"]["badge"]) {
 }
 
 export function ChatPanel({
-  initialMessages,
-  viewersLabel,
+  videoId,
+  initialMessages = [],
+  viewersLabel = "0 viewers",
 }: {
-  initialMessages: ChatMessage[];
-  viewersLabel: string;
+  videoId: string | number;
+  initialMessages?: ChatMessage[];
+  viewersLabel?: string;
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages ?? []);
   const [text, setText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const toast = useToast();
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const canSend = useMemo(() => text.trim().length > 0, [text]);
 
-  function onSend() {
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Polling for updates
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const result = await getVideoDetails(String(videoId));
+        if (result.ok && result.data.chat?.messages) {
+          setMessages(result.data.chat.messages);
+        }
+      } catch (err) {
+        // Silent fail for polling
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [videoId]);
+
+  async function onSend() {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed || isSending) return;
+    
+    setIsSending(true);
     setText("");
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `local-${prev.length + 1}`,
-        user: { name: "You" },
-        message: trimmed,
-      },
-    ]);
+
+    try {
+      const vid = typeof videoId === "string" ? parseInt(videoId, 10) : videoId;
+      const newComment = await addVideoComment(vid, trimmed);
+      
+      // Update local state immediately
+      setMessages((prev) => [...prev, newComment]);
+    } catch (err) {
+      toast.push({
+        variant: "error",
+        title: "Chat Error",
+        message: "Failed to send message. Please try again.",
+      });
+      setText(trimmed);
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
@@ -51,11 +90,11 @@ export function ChatPanel({
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-        {messages.map((m) => {
-          const badge = badgeLabel(m.user.badge);
+        {messages.map((m, idx) => {
+          const badge = badgeLabel(m.user?.badge);
           return (
             <div
-              key={m.id}
+              key={`${m.id}-${idx}`}
               className={[
                 "rounded-xl px-3 py-2 text-sm",
                 m.highlighted
@@ -65,7 +104,7 @@ export function ChatPanel({
             >
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-white/80">
-                  {m.user.name}
+                  {m.user?.name ?? "Anonymous"}
                 </span>
                 {badge ? (
                   <span className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.18em] text-white/70">
@@ -77,6 +116,7 @@ export function ChatPanel({
             </div>
           );
         })}
+        <div ref={chatEndRef} />
       </div>
 
       <div className="border-t border-white/10 p-3">
@@ -94,10 +134,10 @@ export function ChatPanel({
           <button
             type="button"
             onClick={onSend}
-            disabled={!canSend}
-            className="rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={!canSend || isSending}
+            className="rounded-lg bg-primary px-3 py-1.5 text-xs font-black text-black disabled:cursor-not-allowed disabled:opacity-60 transition-all hover:brightness-110"
           >
-            Send
+            {isSending ? "..." : "Send"}
           </button>
         </div>
         <div className="mt-2 text-[10px] text-white/30">Slow mode: On</div>

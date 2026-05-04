@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { Video } from "@/src/types/video";
-import { formatViews, isLiveVideo } from "@/src/utils/video";
+import type { Video } from "@/types/content";
 
 type Props = {
   video: Video;
 };
 
 export function VideoCard({ video }: Props) {
-  const isLive = isLiveVideo(video);
-  const duration = video.duration || (video as any).durationLabel || "";
-  const views = video.views ? formatViews(video.views) : (video as any).viewsLabel || "0";
-  const channelName = video.channelName || video.creator?.name || "Unknown";
+  const isLive = video.kind === "live" && video.status === "live";
+  const duration = video.durationLabel || (video.kind === "live" ? "STREAM" : "");
+  const views = video.viewsLabel || "0";
+  const channelName = video.creator?.name || "Unknown";
 
   return (
     <Link
@@ -22,11 +21,12 @@ export function VideoCard({ video }: Props) {
     >
       <div className="relative aspect-video w-full overflow-hidden">
         <Image
-          src={video.thumbnailUrl}
+          src={video.thumbnailUrl || "/demo/thumbs/thumb-01.svg"}
           alt={video.title}
           fill
           sizes="(max-width: 1024px) 100vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-110"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
 
@@ -58,12 +58,10 @@ export function VideoCard({ video }: Props) {
           </div>
           <div>
             <div className="text-[12px] font-bold text-white/60">{channelName}</div>
-            <div className="text-[11px] font-medium text-white/30">{views} views</div>
+            <div className="text-[11px] font-medium text-white/30">{views} views • {video.uploadedLabel}</div>
           </div>
         </div>
       </div>
     </Link>
   );
 }
-
-

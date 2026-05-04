@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "@/styles/globals.css";
 import { ToastProvider } from "@/components/ui/ToastProvider";
+import { UploadProvider } from "@/context/UploadContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { GlobalUploadIndicator } from "@/components/video/GlobalUploadIndicator";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -28,7 +31,12 @@ export default function RootLayout({
       </head>
       <body className="font-body-md bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container antialiased">
         <ToastProvider>
-          <AppLayout>{children}</AppLayout>
+          <ThemeProvider>
+            <UploadProvider>
+              <AppLayout>{children}</AppLayout>
+              <GlobalUploadIndicator />
+            </UploadProvider>
+          </ThemeProvider>
         </ToastProvider>
       </body>
     </html>
