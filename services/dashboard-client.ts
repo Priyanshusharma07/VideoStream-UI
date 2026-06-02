@@ -4,7 +4,7 @@ import { getAccessToken } from "@/lib/auth-session";
 import type { DashboardPayload } from "@/types/content";
 
 export async function getDashboardData(): Promise<ApiResult<DashboardPayload>> {
-  const token = getAccessToken();
+  const token = await getAccessToken();
   if (!token) {
     return { ok: false, error: { code: "unauthorized", message: "Please log in." } };
   }

@@ -102,7 +102,11 @@ export default function UploadPage() {
     if (isBusy || !file || !title.trim()) return;
 
     try {
-      const token = getAccessToken();
+      const token = await getAccessToken();
+      if (!token) {
+        toast.push({ variant: "error", title: "Auth Error", message: "You must be signed in to upload." });
+        return;
+      }
       const videoId = await startUpload({
         file,
         title: title.trim(),

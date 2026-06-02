@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/ToastProvider";
 import { clearAuthSession } from "@/lib/auth-session";
+import { useAuth } from "@clerk/nextjs";
 
 const NAV_ITEMS = [
   { icon: "home", label: "Home", path: "/" },
@@ -20,9 +21,16 @@ export function AppSidebar({
 }) {
   const toast = useToast();
   const router = useRouter();
+  const { signOut } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     clearAuthSession();
+    
+    try {
+      await signOut();
+    } catch (e) {
+      console.error("Failed to sign out from Clerk:", e);
+    }
     
     toast.push({
       variant: "success",

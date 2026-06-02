@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { TopbarSearch } from "./TopbarSearch";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth, UserButton } from "@clerk/nextjs";
 
 const NAV_LINKS = [
   { label: "Cinema", path: "/explore?cat=cinema" },
@@ -23,6 +24,7 @@ export function AppTopbar({
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
+  const { isLoaded, userId } = useAuth();
 
   const handleNotifications = () => {
     toast.push({
@@ -41,8 +43,17 @@ export function AppTopbar({
             href="/"
             className="group flex items-center gap-2 text-xl font-black tracking-tighter text-white font-headline-lg flex-shrink-0"
           >
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-black rotate-3 group-hover:rotate-12 transition-transform">
-               <span className="material-symbols-outlined text-[20px] font-black">movie</span>
+            <div className="w-8 h-8 flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_10px_rgba(255,0,85,0.4)]">
+                <defs>
+                  <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: '#ff0055', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#b3003b', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                <path d="M85,50 C85,69.33 69.33,85 50,85 C30.67,85 15,69.33 15,50 C15,30.67 30.67,15 50,15 L50,28 C37.85,28 28,37.85 28,50 C28,62.15 37.85,72 50,72 C62.15,72 72,62.15 72,50 L85,50 Z" fill="url(#brandGradient)" />
+                <path d="M45,35 L65,50 L45,65 Z" fill="white" />
+              </svg>
             </div>
             <span className="tracking-[-0.05em] uppercase">Cineview</span>
           </Link>
@@ -94,13 +105,25 @@ export function AppTopbar({
 
           {/* Profile */}
           {rightSlot || (
-            <Link href="/dashboard" className="flex-shrink-0">
-              <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-br from-primary via-secondary to-tertiary hover:rotate-12 transition-transform duration-500 shadow-lg shadow-primary/20">
-                <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-[10px] font-black text-white border border-black/50 overflow-hidden">
-                   <img src="https://i.pravatar.cc/100?u=cineview" alt="Avatar" className="w-full h-full object-cover opacity-80" />
+            <div className="flex-shrink-0">
+              {isLoaded && userId ? (
+                <div className="w-10 h-10 rounded-full flex items-center justify-center p-[2px] bg-gradient-to-br from-primary via-secondary to-tertiary shadow-lg shadow-primary/20">
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        userButtonAvatarBox: "w-full h-full border border-black/50"
+                      }
+                    }}
+                  />
                 </div>
-              </div>
-            </Link>
+              ) : isLoaded && !userId ? (
+                <Link href="/login" className="bg-primary hover:bg-blue-600 text-white font-bold text-[13px] px-5 py-2 rounded-xl transition-all shadow-lg shadow-primary/20">
+                  Sign In
+                </Link>
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse"></div>
+              )}
+            </div>
           )}
         </div>
       </header>

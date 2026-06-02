@@ -17,10 +17,19 @@ export function CineViewLogo({
     <Link href={href} className="group flex items-center gap-2.5 select-none">
       {/* Icon mark */}
       <div
-        className={`${iconSize} relative flex shrink-0 items-center justify-center bg-primary rounded-lg shadow-lg shadow-primary/20`}
+        className={`${iconSize} relative flex shrink-0 items-center justify-center rounded-lg shadow-lg shadow-pink-500/20 group-hover:scale-110 transition-transform`}
         aria-hidden="true"
       >
-        <span className="material-symbols-outlined text-black font-bold text-xl">play_arrow</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-full h-full">
+          <defs>
+            <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style={{ stopColor: '#ff0055', stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: '#b3003b', stopOpacity: 1 }} />
+            </linearGradient>
+          </defs>
+          <path d="M85,50 C85,69.33 69.33,85 50,85 C30.67,85 15,69.33 15,50 C15,30.67 30.67,15 50,15 L50,28 C37.85,28 28,37.85 28,50 C28,62.15 37.85,72 50,72 C62.15,72 72,62.15 72,50 L85,50 Z" fill="url(#brandGradient)" />
+          <path d="M45,35 L65,50 L45,65 Z" fill="white" />
+        </svg>
       </div>
 
       {/* Wordmark */}

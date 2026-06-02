@@ -6,6 +6,7 @@ import { UploadProvider } from "@/context/UploadContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { GlobalUploadIndicator } from "@/components/video/GlobalUploadIndicator";
+import { ClerkProvider } from '@clerk/nextjs';
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -30,7 +31,8 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
       </head>
       <body className="font-body-md bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container antialiased">
-        <ToastProvider>
+        <ClerkProvider>
+          <ToastProvider>
           <ThemeProvider>
             <UploadProvider>
               <AppLayout>{children}</AppLayout>
@@ -38,6 +40,7 @@ export default function RootLayout({
             </UploadProvider>
           </ThemeProvider>
         </ToastProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

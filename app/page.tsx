@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const CATEGORIES = [
   { label: "All Trending", slug: "all" },
@@ -83,10 +84,12 @@ export default function Home() {
       {/* ─── Hero Trending Section ─── */}
       <section className="mb-8 relative rounded-3xl overflow-hidden glass-border aspect-[21/9] min-h-[320px]">
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover"
+          <Image
+            fill
+            className="object-cover"
             alt="Neon Dreams: The Rebirth"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBImcS2ra2sZ_z9H_4F3sIz9YUbAMkeWq8uNn9hGnCEA0Qvsr0eV6DKiqsLLZv69SSM3BkphZq0dVxrYbjJr0c3YCiDla8adCYi_EkcqsOZnMDXWv56z3tsCKy0uexvXwLJr9TJxKtzDe7MoqnkTgQN23fAO9bydJd_FHTYVK3eBPAkY1MFh5rR-D22G2GwF1RZmsRvxpI_zWPL631yK3Q5eEKl6lslwzRSIKNN1qC6NAj-zYoN55e1p3JJhIWHJwJZc00GIU-oSXVN"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
@@ -169,8 +172,9 @@ export default function Home() {
             href="/watch/league-finals"
             className="md:col-span-2 md:row-span-2 relative group rounded-2xl overflow-hidden glass-border block md:row-start-1 md:row-end-3"
           >
-            <img
-              className="w-full h-full min-h-[260px] object-cover transition-transform duration-700 group-hover:scale-110"
+            <Image
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf2xaEUL1URDpOH84lNh1Ky_bLz8GXnX9rIw-rhu6afxRfNs3V---ItIUZ1in8eiO-HEqhGMqb6TYTW_tlvsfD3piJ17ZiZgI6D45MkZZ-xiqySvuuH_io33QtTy1Vo8rbn6cU4117ea71hr86GVDAhMrETqejGVYk44ThecNhpjKkZVMKs_i396i1Axvfz3nFBZSvWx8EdFPnwJsu37f23aykP2HfRMfdtq9Kemfgb8b8UBDAxVOHzVUWUcfnfC_LdGokpQkXb8Z-"
               alt="League Finals"
             />
@@ -202,8 +206,9 @@ export default function Home() {
               href={`/watch/${id}`}
               className="relative group rounded-2xl overflow-hidden glass-border min-h-[180px] md:min-h-0 block"
             >
-              <img
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              <Image
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
                 src={img}
                 alt={title}
               />
@@ -220,8 +225,9 @@ export default function Home() {
             href="/watch/earth-uncharted"
             className="md:col-span-2 relative group rounded-2xl overflow-hidden glass-border min-h-[200px] md:min-h-0 block"
           >
-            <img
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            <Image
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTgl8vtKT2r6ECXXypsr-1A4w6LJnVVYCIgAVS9MNCvym0D2_CUlCULF5dAuMMXMrr5aXsGRIh25vYNsVGf-siyzNRgZRTHzsVtJDPYfyrhBSFq3xxUa9wxzo6nYSTC_lJgmVo9YvWAuLwvQurLBhqeujbvZVynsz7BXWyjfHIVWh8xWrMHm1t7DqL99JG7efFsvT6VWxgR2BU_3x85H3nE_gizmHH6VKVVlA_hd2TqJjKT_yTyJuVRZrPrFMOkMcFsv_aOVg0vsQm"
               alt="Earth: Uncharted"
             />
@@ -263,8 +269,9 @@ export default function Home() {
               className="flex flex-col gap-2 group"
             >
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden glass-border shadow-lg group-hover:scale-[1.03] group-hover:ring-2 ring-white/20 transition-all duration-300">
-                <img
-                  className="w-full h-full object-cover"
+                <Image
+                  fill
+                  className="object-cover"
                   src={item.img}
                   alt={item.title}
                 />

@@ -26,8 +26,8 @@ function signedMimeType(videoExt: 'mp4' | 'webm' | 'mov'): string {
   return `video/${videoExt}`;
 }
 
-function requireToken(token?: string | null): string {
-  const t = token ?? getAccessToken();
+async function requireToken(token?: string | null): Promise<string> {
+  const t = token ?? await getAccessToken();
   if (!t) throw new Error('Not authenticated. Please sign in to upload.');
   return t;
 }
@@ -73,7 +73,7 @@ export async function getUploadUrl(
   file: File,
   token?: string | null,
 ): Promise<UploadUrlResponse> {
-  const authToken = requireToken(token);
+  const authToken = await requireToken(token);
 
   const videoExt = inferVideoExt(file);
   if (!videoExt) {
@@ -211,7 +211,7 @@ export async function confirmUpload(
   },
   token?: string | null,
 ): Promise<CreateVideoResponse> {
-  const authToken = requireToken(token);
+  const authToken = await requireToken(token);
 
   const body: Record<string, unknown> = {
     title: params.title,
@@ -255,7 +255,7 @@ export async function confirmUpload(
  */
 export async function uploadVideo(options: UploadVideoOptions): Promise<CreateVideoResponse> {
   const { file, title, description, category, tags, isPublic = true, signal } = options;
-  const token = requireToken(options.token);
+  const token = await requireToken(options.token);
 
   // Phase 1 — get presigned URL
   options.onProgress?.('presign', 0);

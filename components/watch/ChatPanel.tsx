@@ -48,7 +48,7 @@ export function ChatPanel({
   const [viewerCount, setViewerCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
   const router = useRouter();
 
@@ -58,7 +58,9 @@ export function ChatPanel({
 
   // Scroll to bottom on new message
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // Socket connection
@@ -89,6 +91,7 @@ export function ChatPanel({
     });
 
     return () => {
+      socket.emit("leaveRoom", String(videoId));
       socket.disconnect();
     };
   }, [videoId]);
@@ -133,7 +136,7 @@ export function ChatPanel({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <div ref={chatContainerRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4 scroll-smooth">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-white/20">
             <span className="material-symbols-outlined text-3xl">forum</span>
@@ -169,7 +172,6 @@ export function ChatPanel({
             </div>
           );
         })}
-        <div ref={chatEndRef} />
       </div>
 
       {/* Input */}
