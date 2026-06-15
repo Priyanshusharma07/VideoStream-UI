@@ -149,20 +149,11 @@ export default async function WatchPage({
         {/* Right: Chat / Sidebar */}
         <aside className="lg:sticky lg:top-24 h-fit">
           <div className="glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[750px]">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/2">
-               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                 <span className="material-symbols-outlined text-secondary">chat_bubble</span>
-                 Live Chat
-               </h3>
-               <div className="px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold border border-secondary/20">
-                 {chat.viewersLabel}
-               </div>
-            </div>
             <div className="flex-1 overflow-hidden">
               <ChatPanel
                 videoId={id}
                 initialMessages={chat.messages}
-                viewersLabel={chat.viewersLabel}
+                initialViewersLabel={chat.viewersLabel}
               />
             </div>
           </div>

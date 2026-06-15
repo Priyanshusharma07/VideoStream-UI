@@ -87,6 +87,8 @@ export function WebRTCViewer({ roomId }: Props) {
 
     return () => {
       cancelled = true;
+      console.log('[Viewer] Leaving room and disconnecting:', roomId);
+      socket.emit('leaveRoom', roomId);
       socket.disconnect();
       pcRef.current?.close();
     };
