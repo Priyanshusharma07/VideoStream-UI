@@ -6,10 +6,12 @@ export function isHlsUrl(url: string | null | undefined): boolean {
   return trimmed.endsWith(".m3u8") || trimmed.includes(".m3u8?");
 }
 
-export function isLiveVideo(video: Video | any): boolean {
+export function isLiveVideo(video: Video | Partial<Video> | Record<string, unknown>): boolean {
   if (!video) return false;
-  const url = video.videoUrl || "";
-  const duration = (video.duration || video.durationLabel || "").trim().toUpperCase();
+  // @ts-ignore - we are safely checking for properties
+  const url = (video.videoUrl as string) || "";
+  // @ts-ignore
+  const duration = ((video.duration as string) || (video.durationLabel as string) || "").trim().toUpperCase();
   return isHlsUrl(url) || duration === "LIVE";
 }
 

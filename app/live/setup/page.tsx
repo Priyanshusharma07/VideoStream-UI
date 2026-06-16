@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { startLiveStream } from "@/services/videos-client";
 import { useToast } from "@/components/ui/ToastProvider";
 
+import { useAuth } from "@clerk/nextjs";
+
 const CATEGORIES = [
   { label: "Cinema", slug: "cinema", icon: "movie" },
   { label: "Gaming", slug: "gaming", icon: "sports_esports" },
@@ -18,12 +20,15 @@ export default function LiveSetupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const toast = useToast();
+  const { getToken } = useAuth();
 
   async function handleStart() {
     if (!title.trim()) return;
     setLoading(true);
     try {
-      const res = await startLiveStream({ title, category });
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const res = await startLiveStream({ title, category }, token);
       if (res.ok) {
         toast.push({ variant: "success", title: "Live Initialized", message: "Preparing your cinematic broadcast..." });
         router.push(`/live/broadcast/${res.data.videoId}`);

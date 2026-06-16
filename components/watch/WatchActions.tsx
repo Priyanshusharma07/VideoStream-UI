@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/ToastProvider";
-import { postApi } from "@/services/api-client";
+import { useAuth } from "@clerk/nextjs";
+import { likeVideo, unlikeVideo } from "@/services/videos-client";
 
 type Props = {
   videoId: string | number;
@@ -16,6 +17,7 @@ export function WatchActions({ videoId, creatorName, initialLikesLabel }: Props)
   const [liked, setLiked] = useState(false);
   const [likesLabel, setLikesLabel] = useState(initialLikesLabel ?? "0");
   const [liking, setLiking] = useState(false);
+  const { getToken } = useAuth();
 
   async function toggleLike() {
     if (liking) return;
@@ -25,15 +27,17 @@ export function WatchActions({ videoId, creatorName, initialLikesLabel }: Props)
 
     try {
       const id = encodeURIComponent(String(videoId));
-      const endpoint = wasLiked
-        ? `/videos/${id}/unlike`
-        : `/videos/${id}/like`;
-      const res = await postApi<Record<string, never>, { likesLabel?: string }>(
-        endpoint,
-        {},
-      );
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+
+      const res = wasLiked
+        ? await unlikeVideo(id, token)
+        : await likeVideo(id, token);
+
       if (res.ok && res.data?.likesLabel) {
-        setLikesLabel(res.data.likesLabel);
+        setLikesLabel(String(res.data.likesLabel));
+      } else if (res.ok && res.data?.count !== undefined) {
+        setLikesLabel(String(res.data.count));
       }
       toast.push({
         variant: wasLiked ? "info" : "success",

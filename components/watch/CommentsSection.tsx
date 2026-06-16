@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { addVideoComment } from "@/services/videos-client";
 import { useToast } from "@/components/ui/ToastProvider";
+import { useAuth } from "@clerk/nextjs";
 
 type Comment = {
   id: string;
@@ -22,6 +23,7 @@ export function CommentsSection({
   const [text, setText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const toast = useToast();
+  const { getToken } = useAuth();
 
   async function handlePost() {
     const trimmed = text.trim();
@@ -30,7 +32,9 @@ export function CommentsSection({
     setIsSending(true);
     try {
       const vid = typeof videoId === "string" ? parseInt(videoId, 10) : videoId;
-      const newComment = await addVideoComment(vid, trimmed);
+      const token = await getToken();
+      if (!token) throw new Error("Not authenticated");
+      const newComment = await addVideoComment(vid, trimmed, token);
       setComments((prev) => [newComment, ...prev]);
       setText("");
       toast.push({ variant: "success", title: "Comment Posted", message: "Your feedback has been added." });

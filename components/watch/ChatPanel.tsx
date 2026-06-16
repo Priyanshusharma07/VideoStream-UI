@@ -37,58 +37,96 @@ const SOCKET_URL = `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001
 export function ChatPanel({
   videoId,
   initialMessages = [],
+  initialViewersLabel,
 }: {
   videoId: string | number;
   initialMessages?: ChatMessage[];
+  /** Fallback viewers label from SSR – replaced by live socket data once connected */
+  initialViewersLabel?: string;
+  /** @deprecated — use initialViewersLabel instead */
   viewersLabel?: string;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages ?? []);
   const [text, setText] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [viewerCount, setViewerCount] = useState(0);
+  // Live viewer count from socket – falls back to SSR value while disconnected
+  const [viewerCount, setViewerCount] = useState<number | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const socketRef = useRef<Socket | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
   const router = useRouter();
 
-  const isLoggedIn = typeof window !== "undefined" && !!getAccessToken();
   const userName = getCurrentUserName();
   const canSend = useMemo(() => text.trim().length > 0 && isConnected, [text, isConnected]);
 
+  // Check login status client-side (getAccessToken may be async)
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const token = await getAccessToken();
+        setIsLoggedIn(!!token);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    }
+    checkAuth();
+  }, []);
+
   // Scroll to bottom on new message
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // Socket connection
   useEffect(() => {
+    console.log("[ChatPanel] Connecting to socket:", SOCKET_URL);
     const socket = io(SOCKET_URL, {
       transports: ["websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
     });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       setIsConnected(true);
+      console.log("[ChatPanel] Connected:", socket.id, "joining room:", videoId);
       socket.emit("joinRoom", String(videoId));
-      console.log("[Chat] Joined room:", videoId);
     });
 
-    socket.on("disconnect", () => setIsConnected(false));
-    socket.on("connect_error", () => setIsConnected(false));
+    socket.on("disconnect", (reason) => {
+      console.log("[ChatPanel] Disconnected:", reason);
+      setIsConnected(false);
+    });
+    socket.on("connect_error", (err) => {
+      console.warn("[ChatPanel] Connection error:", err.message);
+      setIsConnected(false);
+    });
 
     // Receive messages from ALL users in the room
     socket.on("newMessage", (msg: ChatMessage) => {
+      console.log("[ChatPanel] New message received:", msg);
       setMessages((prev) => [...prev, msg]);
     });
 
+    // Real-time viewer count pushed by gateway
     socket.on("viewerCount", (count: number) => {
+      console.log("[ChatPanel] Viewer count update:", count);
       setViewerCount(count);
     });
 
+    // Handle stream ending
+    socket.on("broadcasterLeft", () => {
+      console.log("[ChatPanel] Broadcaster left the room");
+    });
+
     return () => {
+      console.log("[ChatPanel] Cleaning up socket for room:", videoId);
+      socket.emit("leaveRoom", String(videoId));
       socket.disconnect();
     };
   }, [videoId]);
@@ -119,21 +157,30 @@ export function ChatPanel({
     }
   }
 
+  // Derive the viewers display label
+  const viewersDisplay =
+    viewerCount !== null
+      ? viewerCount === 1
+        ? "1 watching"
+        : `${viewerCount.toLocaleString()} watching`
+      : initialViewersLabel ?? "–";
+
   return (
-    <aside className="flex h-full flex-col rounded-2xl bg-black/35 ring-1 ring-white/10 backdrop-blur">
+    <aside className="flex h-full flex-col bg-black/35 ring-1 ring-white/10 backdrop-blur">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-white/20"}`} />
           <div className="text-xs font-semibold tracking-[0.22em] text-white/60">LIVE CHAT</div>
         </div>
-        <div className="text-xs text-emerald-300 font-bold">
-          {viewerCount.toLocaleString()} watching
+        <div className={`text-xs font-bold flex items-center gap-1 ${isConnected ? "text-emerald-300" : "text-white/40"}`}>
+          <span className="material-symbols-outlined text-[14px]">visibility</span>
+          {viewersDisplay}
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <div ref={chatContainerRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4 scroll-smooth">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full gap-2 text-white/20">
             <span className="material-symbols-outlined text-3xl">forum</span>
@@ -169,7 +216,6 @@ export function ChatPanel({
             </div>
           );
         })}
-        <div ref={chatEndRef} />
       </div>
 
       {/* Input */}

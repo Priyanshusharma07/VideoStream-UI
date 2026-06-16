@@ -51,28 +51,32 @@ export function clearAuthSession() {
   document.cookie = `${COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 
-export function getAccessToken(): string | null {
+export async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
 
-  // Try LocalStorage first
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  const json = safeParseJson(raw);
-
-  if (isRecord(json) && typeof json.accessToken === 'string' && json.accessToken.trim()) {
-    return json.accessToken;
+  // If Clerk is available on the window, use it to get the token
+  if ((window as any).Clerk?.session) {
+    try {
+      return await (window as any).Clerk.session.getToken();
+    } catch (e) {
+      console.error("Failed to get Clerk token", e);
+    }
   }
-  
-  // Fallback to Cookie
-  const name = COOKIE_NAME + "=";
+
+  // Fallback to Cookie (for Next.js Middleware or __session)
+  const names = ['__session=', COOKIE_NAME + '='];
   const decodedCookie = decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
+  
+  for (const name of names) {
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
     }
   }
 

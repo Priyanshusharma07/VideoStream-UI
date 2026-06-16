@@ -24,7 +24,7 @@ export function useWatchlist(videoId?: string) {
 
   const inWatchlist = useMemo(() => {
     if (!videoId) return false;
-    return isInWatchlist(videoId);
+    return ids.includes(videoId);
   }, [videoId, ids]);
 
   return {
