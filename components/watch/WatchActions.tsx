@@ -34,9 +34,7 @@ export function WatchActions({ videoId, creatorName, initialLikesLabel }: Props)
         ? await unlikeVideo(id, token)
         : await likeVideo(id, token);
 
-      if (res.ok && res.data?.likesLabel) {
-        setLikesLabel(String(res.data.likesLabel));
-      } else if (res.ok && res.data?.count !== undefined) {
+      if (res.ok && res.data?.count !== undefined) {
         setLikesLabel(String(res.data.count));
       }
       toast.push({
