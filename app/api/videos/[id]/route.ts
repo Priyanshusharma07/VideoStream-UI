@@ -59,7 +59,14 @@ export async function GET(
   _req: NextRequest,
   ctx: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await ctx.params;
-  const payload: ApiResult<WatchPagePayload> = { ok: true, data: demoWatchPayload(id) };
-  return NextResponse.json(payload);
+  try {
+    const { id } = await ctx.params;
+    const payload: ApiResult<WatchPagePayload> = { ok: true, data: demoWatchPayload(id) };
+    return NextResponse.json(payload);
+  } catch (error: any) {
+    return NextResponse.json(
+      { ok: false, error: { code: "not_found", message: error.message || "Video not found" } },
+      { status: 404 }
+    );
+  }
 }

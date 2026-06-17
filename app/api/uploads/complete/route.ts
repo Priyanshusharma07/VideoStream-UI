@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import type { ApiResult } from "@/types/api";
 import type { CompleteUploadResponse } from "@/types/upload";
 
+import crypto from "crypto";
+
 export const runtime = "nodejs";
 
 function json<T>(payload: T, status = 200) {

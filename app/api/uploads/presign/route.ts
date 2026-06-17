@@ -4,6 +4,8 @@ import type {
   CreatePresignedUploadResponse,
 } from "@/types/upload";
 
+import crypto from "crypto";
+
 export const runtime = "nodejs";
 
 function json<T>(payload: T, status = 200) {
