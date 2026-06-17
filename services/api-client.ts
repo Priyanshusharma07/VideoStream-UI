@@ -46,11 +46,24 @@ function buildApiUrl(path: string): string {
   // If an explicit API base is configured, always use it (useful for separate backend + CORS).
   if (API_BASE) return `${API_BASE}${normalized}`;
 
-  // Otherwise default to same-origin Next.js Route Handlers under /api.
-  if (normalized === API_PREFIX || normalized.startsWith(`${API_PREFIX}/`)) {
-    return normalized;
+  // Compute the path with the /api prefix.
+  const withPrefix =
+    normalized === API_PREFIX || normalized.startsWith(`${API_PREFIX}/`)
+      ? normalized
+      : `${API_PREFIX}${normalized}`;
+
+  // Server-side (Node.js): fetch() requires absolute URLs.
+  // NEXT_PUBLIC_APP_URL must be set in Amplify environment variables.
+  if (typeof window === "undefined") {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/+$/, "");
+    if (appUrl) return `${appUrl}${withPrefix}`;
+    // Local dev fallback
+    const port = process.env.PORT ?? "3000";
+    return `http://localhost:${port}${withPrefix}`;
   }
-  return `${API_PREFIX}${normalized}`;
+
+  // Client-side: relative URL is fine.
+  return withPrefix;
 }
 
 function shouldLog() {

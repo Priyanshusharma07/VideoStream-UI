@@ -1,5 +1,9 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
+/**
+ * Public routes — accessible without authentication.
+ * All other routes are protected and redirect to /login.
+ */
 const isPublicRoute = createRouteMatcher([
   '/',
   '/login(.*)',
@@ -9,7 +13,13 @@ const isPublicRoute = createRouteMatcher([
   '/feed(.*)',
   '/watch(.*)',
   '/explore(.*)',
-  '/api/(.*)'
+  '/discover(.*)',
+  '/qa(.*)',
+  '/notifications(.*)',
+  // Public API routes (demo data, health check)
+  '/api/health',
+  '/api/feed',
+  '/api/videos/(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
