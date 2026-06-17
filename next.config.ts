@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",  // ← ADD THIS for Amplify SSR
   images: {
     remotePatterns: [
       // Primary S3 bucket (path-style)
@@ -20,19 +21,19 @@ const nextConfig: NextConfig = {
         hostname: "*.s3.*.amazonaws.com",
         pathname: "/**",
       },
-      // YouTube thumbnails (used in search results etc.)
+      // YouTube thumbnails
       {
         protocol: "https",
         hostname: "i.ytimg.com",
         pathname: "/**",
       },
-      // Local dev backend (e.g. thumbnails served by the API)
+      // Local dev backend
       {
         protocol: "http",
         hostname: "localhost",
         pathname: "/**",
       },
-      // Google images (used for dummy data on homepage)
+      // Google images
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
