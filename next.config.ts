@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",  // ← ADD THIS for Amplify SSR
+  // NOTE: Do NOT set output: "standalone" for Amplify Web Compute.
+  // Amplify auto-detects Next.js SSR and handles Lambda packaging itself.
+  // "standalone" is only for self-hosted / Docker deployments.
   images: {
     remotePatterns: [
       // Primary S3 bucket (path-style)
