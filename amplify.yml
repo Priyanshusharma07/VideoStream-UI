@@ -7,7 +7,8 @@ frontend:
     build:
       commands:
         # Inject Amplify Console NEXT_PUBLIC_ env vars into the build
-        - env | grep -e NEXT_PUBLIC_ >> .env.production || true
+        - touch .env.production
+        - printenv | grep -e NEXT_PUBLIC_ >> .env.production || true
         - npm run build
   artifacts:
     baseDirectory: .next
