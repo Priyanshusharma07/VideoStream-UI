@@ -3,6 +3,16 @@ import { getAccessToken } from '@/lib/auth-session';
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? '').replace(/\/+$/, '');
 
+// When API_BASE is empty (no external backend configured), all paths must
+// include the /api prefix so the Next.js rewrite rule picks them up and
+// proxies them to the real backend at cineview-api.priyanshusharma015.in.
+function apiUrl(path: string): string {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (API_BASE) return `${API_BASE}${normalized}`;
+  // Prefix with /api so the next.config.ts rewrite catches it.
+  return normalized.startsWith('/api') ? normalized : `/api${normalized}`;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function inferVideoExt(file: File): 'mp4' | 'webm' | 'mov' | null {
@@ -86,7 +96,7 @@ export async function getUploadUrl(
   // the exact MIME here so we can match it on the S3 PUT (must be identical).
   const contentType = signedMimeType(videoExt);
 
-  const res = await fetch(`${API_BASE}/videos/upload-url`, {
+  const res = await fetch(apiUrl('/videos/upload-url'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -222,7 +232,7 @@ export async function confirmUpload(
   if (params.tags && params.tags.length > 0) body.tags = params.tags;
   if (typeof params.isPublic === 'boolean') body.isPublic = params.isPublic;
 
-  const res = await fetch(`${API_BASE}/videos`, {
+  const res = await fetch(apiUrl('/videos'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -293,7 +303,7 @@ export async function uploadVideo(options: UploadVideoOptions): Promise<CreateVi
 // services/videoService.ts
 
 export async function getVideos(token?: string | null) {
-  const res = await fetch(`${API_BASE}/dashboard`, {
+  const res = await fetch(apiUrl('/dashboard'), {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -316,11 +326,11 @@ export async function getVideos(token?: string | null) {
 
       // ✅ FIX: build full URLs
       thumbnailUrl: v.thumbnailPath
-        ? `${API_BASE}/videos/thumbnail?key=${encodeURIComponent(v.thumbnailPath)}`
+        ? apiUrl(`/videos/thumbnail?key=${encodeURIComponent(v.thumbnailPath)}`)
         : '/placeholder.jpg',
 
       videoUrl: v.s3HlsKey
-        ? `${API_BASE}/videos/play?key=${encodeURIComponent(v.s3HlsKey)}`
+        ? apiUrl(`/videos/play?key=${encodeURIComponent(v.s3HlsKey)}`)
         : null,
     }));
 }

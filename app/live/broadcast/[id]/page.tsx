@@ -9,7 +9,10 @@ import { io, Socket } from "socket.io-client";
 
 type Phase = "requesting-camera" | "camera-denied" | "live" | "error";
 
-const SOCKET_URL = `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'}/live`;
+// Derive the Socket.IO server URL from env or fall back to the known production backend.
+// NEXT_PUBLIC_API_BASE should be set to https://cineview-api.priyanshusharma015.in in Amplify.
+const _API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? 'https://cineview-api.priyanshusharma015.in').replace(/\/+$/, '');
+const SOCKET_URL = `${_API_BASE}/live`;
 
 const RTC_CONFIG: RTCConfiguration = {
   iceServers: [
