@@ -6,6 +6,7 @@ import { endLiveStream } from "@/services/videos-client";
 import { ChatPanel } from "@/components/watch/ChatPanel";
 import { useToast } from "@/components/ui/ToastProvider";
 import { io, Socket } from "socket.io-client";
+import { useAuth } from "@clerk/nextjs";
 
 type Phase = "requesting-camera" | "camera-denied" | "live" | "error";
 
@@ -36,6 +37,7 @@ export default function BroadcastPage() {
 
   const router = useRouter();
   const toast = useToast();
+  const { getToken } = useAuth();
 
   function createPeerForViewer(viewerId: string, socket: Socket, stream: MediaStream): RTCPeerConnection {
     const pc = new RTCPeerConnection(RTC_CONFIG);
@@ -81,8 +83,18 @@ export default function BroadcastPage() {
       if (videoRef.current) videoRef.current.srcObject = stream;
       setPhase("live");
 
-      // 2. Connect socket
-      const socket = io(SOCKET_URL, { transports: ['websocket'] });
+      // 2. Get auth token and connect socket
+      const token = await getToken();
+      if (!token) {
+        toast.push({ variant: "error", title: "Unauthorized", message: "You must be signed in to broadcast." });
+        setPhase("error");
+        return;
+      }
+
+      const socket = io(SOCKET_URL, {
+        transports: ['websocket'],
+        auth: { token }, // sent to the backend on the handshake
+      });
       socketRef.current = socket;
 
       socket.on('connect', () => {
@@ -145,7 +157,8 @@ export default function BroadcastPage() {
   async function handleEnd() {
     setIsEnding(true);
     try {
-      await endLiveStream(id as string);
+      const token = await getToken();
+      await endLiveStream(id as string, token ?? undefined);
       socketRef.current?.disconnect();
       streamRef.current?.getTracks().forEach(t => t.stop());
       peersRef.current.forEach(pc => pc.close());
