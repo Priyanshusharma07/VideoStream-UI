@@ -46,24 +46,38 @@ function buildApiUrl(path: string): string {
   // If an explicit API base is configured, always use it (useful for separate backend + CORS).
   if (API_BASE) return `${API_BASE}${normalized}`;
 
-  // Compute the path with the /api prefix.
+  // ─── Client-side ─────────────────────────────────────────────────────────────
+  // Route through /api/proxy/* so the Next.js Route Handler proxy can forward
+  // the Authorization header to the backend.  Vercel's next.config rewrites()
+  // to an external host strips the Authorization header (security policy).
+  // The Route Handler at app/api/proxy/[...path]/route.ts forwards all headers.
+  if (typeof window !== "undefined") {
+    // Already an /api/proxy/... path (idempotent)
+    if (normalized.startsWith("/api/proxy/")) return normalized;
+
+    // Strip any leading /api prefix and re-route through /api/proxy/
+    const withoutApiPrefix = normalized.startsWith("/api/")
+      ? normalized.slice("/api".length) // "/api/videos/..." → "/videos/..."
+      : normalized;
+
+    return `/api/proxy${withoutApiPrefix}`;
+  }
+
+  // ─── Server-side ─────────────────────────────────────────────────────────────
+  // Compute the path with the /api prefix so SSR calls still hit the right route.
   const withPrefix =
     normalized === API_PREFIX || normalized.startsWith(`${API_PREFIX}/`)
       ? normalized
       : `${API_PREFIX}${normalized}`;
 
-  // Server-side (Node.js): fetch() requires absolute URLs.
-  // NEXT_PUBLIC_APP_URL must be set in Amplify environment variables.
-  if (typeof window === "undefined") {
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/+$/, "");
-    if (appUrl) return `${appUrl}${withPrefix}`;
-    // Local dev fallback
-    const port = process.env.PORT ?? "3000";
-    return `http://localhost:${port}${withPrefix}`;
-  }
+  // fetch() requires absolute URLs server-side.
+  // NEXT_PUBLIC_APP_URL must be set in Amplify / Vercel environment variables.
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/+$/, "");
+  if (appUrl) return `${appUrl}${withPrefix}`;
 
-  // Client-side: relative URL is fine.
-  return withPrefix;
+  // Local dev fallback
+  const port = process.env.PORT ?? "3000";
+  return `http://localhost:${port}${withPrefix}`;
 }
 
 function shouldLog() {

@@ -4,13 +4,25 @@ import { getAccessToken } from '@/lib/auth-session';
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? '').replace(/\/+$/, '');
 
 // When API_BASE is empty (no external backend configured), all paths must
-// include the /api prefix so the Next.js rewrite rule picks them up and
-// proxies them to the real backend at cineview-api.priyanshusharma015.in.
+// go through the /api/proxy/* Route Handler so Next.js can forward the
+// Authorization header intact.  next.config rewrites() to an external host
+// strip the Authorization header on Vercel (known security policy).
 function apiUrl(path: string): string {
   const normalized = path.startsWith('/') ? path : `/${path}`;
   if (API_BASE) return `${API_BASE}${normalized}`;
-  // Prefix with /api so the next.config.ts rewrite catches it.
-  return normalized.startsWith('/api') ? normalized : `/api${normalized}`;
+
+  // Client-side: route through /api/proxy/ so the Route Handler forwards auth.
+  if (typeof window !== 'undefined') {
+    const withoutApiPrefix = normalized.startsWith('/api/')
+      ? normalized.slice('/api'.length)
+      : normalized;
+    return `/api/proxy${withoutApiPrefix}`;
+  }
+
+  // Server-side: go through /api prefix so the Next.js rewrite picks it up,
+  // OR directly hit the backend when BACKEND_ORIGIN is configured.
+  const withApi = normalized.startsWith('/api') ? normalized : `/api${normalized}`;
+  return withApi;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
