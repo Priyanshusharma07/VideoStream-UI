@@ -79,10 +79,15 @@ export async function postApi<Req, Res>(
 
   let res: Response;
   try {
+    const mergedHeaders = new Headers(init?.headers);
+    if (!mergedHeaders.has("Content-Type")) {
+      mergedHeaders.set("Content-Type", "application/json");
+    }
+
     res = await fetch(url, {
       ...init,
       method: "POST",
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: mergedHeaders,
       body: JSON.stringify(input),
     });
   } catch (err) {
@@ -224,10 +229,15 @@ export async function patchApi<Req, Res>(
 
   let res: Response;
   try {
+    const mergedHeaders = new Headers(init?.headers);
+    if (!mergedHeaders.has("Content-Type")) {
+      mergedHeaders.set("Content-Type", "application/json");
+    }
+
     res = await fetch(url, {
       ...init,
       method: "PATCH",
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: mergedHeaders,
       body: JSON.stringify(input),
     });
   } catch (err) {
