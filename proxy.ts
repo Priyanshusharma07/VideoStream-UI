@@ -20,6 +20,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/health',
   '/api/feed',
   '/api/videos/(.*)',
+  // Auth is validated by the backend; the route handler only forwards headers.
+  '/api/proxy/(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

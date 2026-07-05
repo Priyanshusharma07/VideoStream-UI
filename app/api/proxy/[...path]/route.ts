@@ -9,7 +9,10 @@
  *   a request to an external origin.  A Route Handler runs server-side and is
  *   NOT subject to that restriction, so it can forward the token verbatim.
  *
- * Route handled: /api/proxy/**  →  https://cineview-api.priyanshusharma015.in/**
+ * Route handled: /api/proxy/videos/live/start
+ *   →  https://cineview-api.priyanshusharma015.in/videos/live/start
+ *
+ * next.config rewrites must NOT match /api/proxy/* (see next.config.ts).
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -18,6 +21,10 @@ export const runtime = "nodejs";
 
 const BACKEND_ORIGIN =
   (process.env.BACKEND_ORIGIN ?? "https://cineview-api.priyanshusharma015.in").replace(/\/+$/, "");
+
+// The NestJS backend routes might not have an /api prefix.
+// We prepend the prefix here so the proxy always hits the correct upstream path.
+const BACKEND_API_PREFIX = process.env.BACKEND_API_PREFIX ?? "";
 
 /** Headers the proxy should NOT forward upstream (hop-by-hop / sensitive). */
 const HOP_BY_HOP = new Set([
@@ -47,7 +54,7 @@ function buildUpstreamHeaders(incoming: Headers): Headers {
 async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
   const upstreamPath = "/" + path.join("/");
   const search = req.nextUrl.search ?? "";
-  const upstreamUrl = `${BACKEND_ORIGIN}${upstreamPath}${search}`;
+  const upstreamUrl = `${BACKEND_ORIGIN}${BACKEND_API_PREFIX}${upstreamPath}${search}`;
 
   const upstreamHeaders = buildUpstreamHeaders(req.headers);
 
