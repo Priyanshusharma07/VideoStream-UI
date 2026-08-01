@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { icon: "home", label: "Home", path: "/" },
   { icon: "explore", label: "Explore", path: "/explore" },
   { icon: "sensors", label: "Live", path: "/live" },
+  { icon: "video_chat", label: "Rooms", path: "/rooms" },
   { icon: "video_library", label: "Dashboard", path: "/dashboard" },
   { icon: "add_circle", label: "Upload", path: "/upload" },
 ];
