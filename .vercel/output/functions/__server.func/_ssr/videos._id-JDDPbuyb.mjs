@@ -1,14 +1,14 @@
 import { P as notFound, m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
-import { l as getVideo } from "./videos.functions-DWRYjk2i.mjs";
+import { l as getVideo } from "./videos.functions-Pwz8LT0K.mjs";
 import { n as queryOptions } from "../_libs/tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/videos._id-CBbS6Sw2.js
+//#region node_modules/.nitro/vite/services/ssr/assets/videos._id-JDDPbuyb.js
 var videoQuery = (id) => queryOptions({
 	queryKey: ["video", id],
 	queryFn: () => getVideo({ data: { id } })
 });
 var $$splitErrorComponentImporter = () => import("./videos._id-rx7zo7Ip.mjs");
 var $$splitNotFoundComponentImporter = () => import("./videos2._id-CLXy2f9o.mjs");
-var $$splitComponentImporter = () => import("./videos._id-L4m0AbDb.mjs");
+var $$splitComponentImporter = () => import("./videos._id-Blw6eKGP.mjs");
 var Route = createFileRoute("/videos/$id")({
 	loader: async ({ context, params }) => {
 		const data = await context.queryClient.ensureQueryData(videoQuery(params.id));

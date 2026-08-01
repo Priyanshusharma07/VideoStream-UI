@@ -1,12 +1,12 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { getSupabasePublicEnv } from "@/integrations/supabase/env.server";
 import type { CommentDTO, VideoDTO } from "./video-types";
 
 type DB = SupabaseClient<Database>;
 
 export function publicClient(): DB {
-  const url = process.env["SUPABASE_URL"]!;
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+  const { url, publishableKey: key } = getSupabasePublicEnv();
   return createClient<Database>(url, key, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
     global: {

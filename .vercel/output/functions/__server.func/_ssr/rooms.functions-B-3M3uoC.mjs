@@ -1,8 +1,8 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
 import { a as stringType, i as objectType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/rooms.functions-CXIj9WwS.js
+//#region node_modules/.nitro/vite/services/ssr/assets/rooms.functions-B-3M3uoC.js
 var ITERATIONS = 1e5;
 function toHex(buffer) {
 	return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -94,7 +94,7 @@ var joinRoom = createServerFn({ method: "POST" }).middleware([requireSupabaseAut
 	code: stringType().trim().min(4).max(12),
 	password: stringType().min(1).max(72)
 }).parse(input)).handler(joinRoom_createServerFn_handler, async ({ data, context }) => {
-	const { supabaseAdmin } = await import("./client.server-KzwUIAkW.mjs");
+	const { supabaseAdmin } = await import("./client.server-B6y01odK.mjs");
 	const { data: room } = await supabaseAdmin.from("rooms").select("id, password_hash").eq("code", data.code.toUpperCase()).maybeSingle();
 	if (!room || !await verifyPassword(data.password, room.password_hash)) return {
 		ok: false,

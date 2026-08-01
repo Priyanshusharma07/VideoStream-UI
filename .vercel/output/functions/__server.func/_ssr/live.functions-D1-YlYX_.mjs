@@ -1,8 +1,8 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
-import { t as createSsrRpc } from "./createSsrRpc-CVfMYZJi.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
+import { t as createSsrRpc } from "./createSsrRpc-BBhlQc5O.mjs";
 import { a as stringType, i as objectType, n as enumType } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live.functions-D5-mpNaX.js
+//#region node_modules/.nitro/vite/services/ssr/assets/live.functions-D1-YlYX_.js
 var listLiveStreams = createServerFn({ method: "GET" }).validator((input) => objectType({ status: enumType([
 	"live",
 	"ended",

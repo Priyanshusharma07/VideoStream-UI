@@ -1,6 +1,6 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live._streamId-DpnbM764.js
-var $$splitComponentImporter = () => import("./live._streamId-CfQI4SFH.mjs");
+//#region node_modules/.nitro/vite/services/ssr/assets/live._streamId-BQ3XpTRc.js
+var $$splitComponentImporter = () => import("./live._streamId-HEy-t-vE.mjs");
 var Route = createFileRoute("/live/$streamId")({
 	head: () => ({ meta: [
 		{ title: "Live stream — StreamHub" },

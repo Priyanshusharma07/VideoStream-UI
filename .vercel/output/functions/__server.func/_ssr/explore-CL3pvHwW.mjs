@@ -1,7 +1,7 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
 import { a as stringType, i as objectType } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/explore-DuG7whTY.js
-var $$splitComponentImporter = () => import("./explore-CxwOZkMx.mjs");
+//#region node_modules/.nitro/vite/services/ssr/assets/explore-CL3pvHwW.js
+var $$splitComponentImporter = () => import("./explore-R3YgmFI5.mjs");
 var Route = createFileRoute("/explore")({
 	validateSearch: objectType({
 		q: stringType().optional(),

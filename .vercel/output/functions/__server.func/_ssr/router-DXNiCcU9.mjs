@@ -6,13 +6,13 @@ import { o as require_jsx_runtime } from "../_libs/@radix-ui/react-collection+[.
 import { t as Toaster } from "../_libs/sonner.mjs";
 import { t as QueryClient } from "../_libs/tanstack__query-core.mjs";
 import { a as QueryClientProvider } from "../_libs/tanstack__react-query.mjs";
-import { t as Route$8 } from "./explore-DuG7whTY.mjs";
-import { t as Route$9 } from "./live._streamId-DpnbM764.mjs";
-import { t as Route$10 } from "./profile._userId-CKGuPiZi.mjs";
-import { t as Route$11 } from "./rooms._roomId-HBpX7r6r.mjs";
-import { t as feedQuery } from "./routes-BdcaUHKY.mjs";
-import { t as Route$12 } from "./videos._id-CBbS6Sw2.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BgmML0Jq.js
+import { t as Route$8 } from "./explore-CL3pvHwW.mjs";
+import { t as Route$9 } from "./live._streamId-BQ3XpTRc.mjs";
+import { t as Route$10 } from "./profile._userId-DCY6rkZc.mjs";
+import { t as Route$11 } from "./rooms._roomId-Ur-Tnu9n.mjs";
+import { t as feedQuery } from "./routes-DebmvB4f.mjs";
+import { t as Route$12 } from "./videos._id-JDDPbuyb.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/router-DXNiCcU9.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var styles_default = "/assets/styles-DShN9WbY.css";
@@ -197,7 +197,7 @@ function RootComponent() {
 	});
 }
 var $$splitErrorComponentImporter = () => import("./routes-Ci58sMKk.mjs");
-var $$splitComponentImporter$6 = () => import("./routes-DmR270-d.mjs");
+var $$splitComponentImporter$6 = () => import("./routes-z8R9lT0n.mjs");
 var Route$6 = createFileRoute("/")({
 	head: () => ({ meta: [
 		{ title: "StreamHub — Stream, upload and watch together" },
@@ -255,7 +255,7 @@ var Route$4 = createFileRoute("/auth")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$4, "component")
 });
-var $$splitComponentImporter$3 = () => import("./dashboard-Cfj4DC6M.mjs");
+var $$splitComponentImporter$3 = () => import("./dashboard-BNfB-J9u.mjs");
 var Route$3 = createFileRoute("/_authenticated/dashboard")({
 	head: () => ({ meta: [
 		{ title: "Your videos — StreamHub" },
@@ -274,7 +274,7 @@ var Route$3 = createFileRoute("/_authenticated/dashboard")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$3, "component")
 });
-var $$splitComponentImporter$2 = () => import("./upload-BP9ACQQK.mjs");
+var $$splitComponentImporter$2 = () => import("./upload-yaFk9oqI.mjs");
 var Route$2 = createFileRoute("/_authenticated/upload")({
 	head: () => ({ meta: [
 		{ title: "Upload a video — StreamHub" },
@@ -293,7 +293,7 @@ var Route$2 = createFileRoute("/_authenticated/upload")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter$1 = () => import("./live.index-tgW4bVd2.mjs");
+var $$splitComponentImporter$1 = () => import("./live.index-Fn4Gf6RD.mjs");
 var Route$1 = createFileRoute("/live/")({
 	head: () => ({ meta: [
 		{ title: "Live now — StreamHub" },
@@ -320,7 +320,7 @@ var Route$1 = createFileRoute("/live/")({
 	] }),
 	component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-var $$splitComponentImporter = () => import("./rooms.index-CJx-FyOn.mjs");
+var $$splitComponentImporter = () => import("./rooms.index-CSp5Rmnq.mjs");
 var Route = createFileRoute("/_authenticated/rooms/")({
 	head: () => ({ meta: [
 		{ title: "Watch Rooms — StreamHub" },

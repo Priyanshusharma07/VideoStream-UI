@@ -8,8 +8,8 @@ import { t as Label } from "./label-BBS1D7O_.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 import { i as timeAgo } from "./format-CMVa2bQM.mjs";
 import { i as useQuery, o as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";
-import { i as joinRoom, o as listMyRooms, t as createRoom } from "./rooms.functions-BBD_9XKm.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/rooms.index-CJx-FyOn.js
+import { i as joinRoom, o as listMyRooms, t as createRoom } from "./rooms.functions-BJ1-_f5n.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/rooms.index-CSp5Rmnq.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function RoomsPage() {

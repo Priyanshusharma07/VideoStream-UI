@@ -5,8 +5,8 @@ import { n as Button, t as AppShell } from "./AppShell-CacCG9dI.mjs";
 import { n as formatViews } from "./format-CMVa2bQM.mjs";
 import { r as useSuspenseQuery } from "../_libs/tanstack__react-query.mjs";
 import { t as Rail } from "./VideoCard-BoFdZjQQ.mjs";
-import { t as feedQuery } from "./routes-BdcaUHKY.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DmR270-d.js
+import { t as feedQuery } from "./routes-DebmvB4f.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-z8R9lT0n.js
 var import_jsx_runtime = require_jsx_runtime();
 function HeroBanner({ video }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {

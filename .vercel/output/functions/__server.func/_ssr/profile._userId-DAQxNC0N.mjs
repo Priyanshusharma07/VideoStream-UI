@@ -6,16 +6,16 @@ import { S as Eye, b as Globe, h as MapPin, n as Users, x as Film } from "../_li
 import { a as useSession, n as Button, r as Input, t as AppShell } from "./AppShell-CacCG9dI.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
-import { t as createSsrRpc } from "./createSsrRpc-CVfMYZJi.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
+import { t as createSsrRpc } from "./createSsrRpc-BBhlQc5O.mjs";
 import { a as stringType, i as objectType } from "../_libs/zod.mjs";
 import { i as timeAgo, n as formatViews, r as initialsOf } from "./format-CMVa2bQM.mjs";
 import { i as useQuery, o as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";
 import { n as VideoCard } from "./VideoCard-BoFdZjQQ.mjs";
 import { t as Textarea } from "./textarea-DVfA9G13.mjs";
 import { a as DialogTitle, i as DialogHeader, n as DialogContent, o as DialogTrigger, t as Dialog } from "./dialog-D8P3pPmh.mjs";
-import { t as Route } from "./profile._userId-CKGuPiZi.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/profile._userId-OveSucfM.js
+import { t as Route } from "./profile._userId-DCY6rkZc.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/profile._userId-DAQxNC0N.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var getProfile = createServerFn({ method: "GET" }).validator((input) => objectType({ userId: stringType().uuid() }).parse(input)).handler(createSsrRpc("9df9652da79c7ccc337ce62c64dcd11f1800a8eb6e0bd13747650358f67fe4e8"));

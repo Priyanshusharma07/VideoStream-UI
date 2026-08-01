@@ -1,12 +1,12 @@
 import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { o as require_jsx_runtime } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { t as AppShell } from "./AppShell-CacCG9dI.mjs";
-import { d as searchVideos } from "./videos.functions-DWRYjk2i.mjs";
+import { d as searchVideos } from "./videos.functions-Pwz8LT0K.mjs";
 import { t as Skeleton } from "./skeleton-DrCGcbun.mjs";
 import { i as useQuery } from "../_libs/tanstack__react-query.mjs";
-import { t as Route } from "./explore-DuG7whTY.mjs";
+import { t as Route } from "./explore-CL3pvHwW.mjs";
 import { r as VideoGrid } from "./VideoCard-BoFdZjQQ.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/explore-CxwOZkMx.js
+//#region node_modules/.nitro/vite/services/ssr/assets/explore-R3YgmFI5.js
 var import_jsx_runtime = require_jsx_runtime();
 var TAGS = [
 	"animation",

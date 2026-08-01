@@ -1,9 +1,9 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
 import { a as stringType, i as objectType, n as enumType, r as numberType, t as arrayType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-import { a as fetchSearch, c as withSignedMedia, i as fetchLikeCount, n as fetchComments, o as fetchVideo, r as fetchFeed, s as publicClient, t as bumpViews } from "./videos.server-Dx33rxB1.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/videos.functions-Cd4qmf-6.js
+import { a as fetchSearch, c as withSignedMedia, i as fetchLikeCount, n as fetchComments, o as fetchVideo, r as fetchFeed, s as publicClient, t as bumpViews } from "./videos.server-CGlfCHHi.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/videos.functions-CkVjGjea.js
 var getFeed_createServerFn_handler = createServerRpc({
 	id: "7318d1ebef3ce782f7baeb90ba6182b0fbf9e7250cdc93f143cc1ef704e24fa5",
 	name: "getFeed",

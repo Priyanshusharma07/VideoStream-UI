@@ -1,9 +1,9 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
 import { a as stringType, i as objectType, n as enumType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-import { s as publicClient } from "./videos.server-Dx33rxB1.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live.functions-BHIQR_KU.js
+import { s as publicClient } from "./videos.server-CGlfCHHi.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/live.functions-Cnay6UJx.js
 var SELECT = "id, owner_id, title, description, category, thumbnail_url, playback_url, status, viewer_count, started_at, ended_at";
 async function withHosts(rows) {
 	if (rows.length === 0) return [];

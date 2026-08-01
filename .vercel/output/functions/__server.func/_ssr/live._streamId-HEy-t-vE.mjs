@@ -7,9 +7,9 @@ import { c as Send, n as Users, u as Radio } from "../_libs/lucide-react.mjs";
 import { a as useSession, n as Button, r as Input, t as AppShell } from "./AppShell-CacCG9dI.mjs";
 import { i as timeAgo, r as initialsOf } from "./format-CMVa2bQM.mjs";
 import { i as useQuery, o as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";
-import { t as Route } from "./live._streamId-DpnbM764.mjs";
-import { a as sendLiveMessage, n as getLiveMessages, r as getLiveStream, t as endLiveStream } from "./live.functions-D5-mpNaX.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live._streamId-CfQI4SFH.js
+import { t as Route } from "./live._streamId-BQ3XpTRc.mjs";
+import { a as sendLiveMessage, n as getLiveMessages, r as getLiveStream, t as endLiveStream } from "./live.functions-D1-YlYX_.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/live._streamId-HEy-t-vE.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function LiveChat({ streamId }) {

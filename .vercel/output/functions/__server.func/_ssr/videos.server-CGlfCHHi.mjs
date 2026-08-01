@@ -1,8 +1,8 @@
 import { t as createClient } from "../_libs/supabase__supabase-js.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/videos.server-Dx33rxB1.js
+import { t as getSupabasePublicEnv } from "./auth-middleware-0_baoq69.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/videos.server-CGlfCHHi.js
 function publicClient() {
-	const url = process.env["SUPABASE_URL"];
-	const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+	const { url, publishableKey: key } = getSupabasePublicEnv();
 	return createClient(url, key, {
 		auth: {
 			storage: void 0,
@@ -90,7 +90,7 @@ async function fetchLikeCount(videoId) {
 	return count ?? 0;
 }
 async function bumpViews(videoId) {
-	const { supabaseAdmin } = await import("./client.server-KzwUIAkW.mjs");
+	const { supabaseAdmin } = await import("./client.server-B6y01odK.mjs");
 	const { data } = await supabaseAdmin.from("videos").select("view_count").eq("id", videoId).maybeSingle();
 	if (!data) return;
 	await supabaseAdmin.from("videos").update({ view_count: Number(data.view_count) + 1 }).eq("id", videoId);

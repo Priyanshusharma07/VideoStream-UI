@@ -1,9 +1,9 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
 import { a as stringType, i as objectType } from "../_libs/zod.mjs";
 import { t as createServerRpc } from "./createServerRpc-MBa5GZ-L.mjs";
-import { c as withSignedMedia, s as publicClient } from "./videos.server-Dx33rxB1.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/profile.functions-DXlkQw1o.js
+import { c as withSignedMedia, s as publicClient } from "./videos.server-CGlfCHHi.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/profile.functions-oVPS9bl3.js
 var VIDEO_SELECT = "id, owner_id, channel_name, title, description, tags, visibility, duration_seconds, view_count, video_url, thumbnail_url, created_at";
 var getProfile_createServerFn_handler = createServerRpc({
 	id: "9df9652da79c7ccc337ce62c64dcd11f1800a8eb6e0bd13747650358f67fe4e8",

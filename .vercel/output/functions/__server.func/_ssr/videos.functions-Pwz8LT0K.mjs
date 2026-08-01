@@ -1,8 +1,8 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
-import { t as createSsrRpc } from "./createSsrRpc-CVfMYZJi.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
+import { t as createSsrRpc } from "./createSsrRpc-BBhlQc5O.mjs";
 import { a as stringType, i as objectType, n as enumType, r as numberType, t as arrayType } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/videos.functions-DWRYjk2i.js
+//#region node_modules/.nitro/vite/services/ssr/assets/videos.functions-Pwz8LT0K.js
 var getFeed = createServerFn({ method: "GET" }).handler(createSsrRpc("7318d1ebef3ce782f7baeb90ba6182b0fbf9e7250cdc93f143cc1ef704e24fa5"));
 var searchVideos = createServerFn({ method: "GET" }).validator((input) => objectType({
 	q: stringType().max(120).default(""),

@@ -6,7 +6,7 @@ import { a as Trash2, i as Upload } from "../_libs/lucide-react.mjs";
 import { t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { i as cn, n as Button, t as AppShell } from "./AppShell-CacCG9dI.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { c as getMyVideos, r as deleteVideo } from "./videos.functions-DWRYjk2i.mjs";
+import { c as getMyVideos, r as deleteVideo } from "./videos.functions-Pwz8LT0K.mjs";
 import { t as Skeleton } from "./skeleton-DrCGcbun.mjs";
 import { i as timeAgo, n as formatViews, t as formatDuration } from "./format-CMVa2bQM.mjs";
 import { i as useQuery, o as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";

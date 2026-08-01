@@ -1,6 +1,6 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/rooms._roomId-HBpX7r6r.js
-var $$splitComponentImporter = () => import("./rooms._roomId-oqiXvyaD.mjs");
+//#region node_modules/.nitro/vite/services/ssr/assets/rooms._roomId-Ur-Tnu9n.js
+var $$splitComponentImporter = () => import("./rooms._roomId-DrBx5iJr.mjs");
 var Route = createFileRoute("/_authenticated/rooms/$roomId")({
 	head: () => ({ meta: [
 		{ title: "Room — StreamHub" },

@@ -1,8 +1,8 @@
 import { c as createServerFn } from "./createServerFn-BFFE07zL.mjs";
-import { t as requireSupabaseAuth } from "./auth-middleware-UH_Jp6hR.mjs";
-import { t as createSsrRpc } from "./createSsrRpc-CVfMYZJi.mjs";
+import { r as requireSupabaseAuth } from "./auth-middleware-0_baoq69.mjs";
+import { t as createSsrRpc } from "./createSsrRpc-BBhlQc5O.mjs";
 import { a as stringType, i as objectType } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/rooms.functions-BBD_9XKm.js
+//#region node_modules/.nitro/vite/services/ssr/assets/rooms.functions-BJ1-_f5n.js
 var listMyRooms = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(createSsrRpc("9eeedacd22cae3bf75e2d314a3f76a2fe2dd2e63ca0f25ccfeb3687cca06f294"));
 var createRoom = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).validator((input) => objectType({
 	name: stringType().trim().min(1).max(60),

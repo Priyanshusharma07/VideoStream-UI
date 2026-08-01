@@ -1,6 +1,6 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/profile._userId-CKGuPiZi.js
-var $$splitComponentImporter = () => import("./profile._userId-OveSucfM.mjs");
+//#region node_modules/.nitro/vite/services/ssr/assets/profile._userId-DCY6rkZc.js
+var $$splitComponentImporter = () => import("./profile._userId-DAQxNC0N.mjs");
 var Route = createFileRoute("/profile/$userId")({
 	head: () => ({ meta: [
 		{ title: "Creator profile — StreamHub" },

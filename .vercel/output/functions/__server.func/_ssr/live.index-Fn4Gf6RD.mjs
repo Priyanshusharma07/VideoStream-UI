@@ -7,10 +7,10 @@ import { a as useSession, n as Button, r as Input, t as AppShell } from "./AppSh
 import { n as toast } from "../_libs/sonner.mjs";
 import { i as timeAgo } from "./format-CMVa2bQM.mjs";
 import { i as useQuery, o as useQueryClient, t as useMutation } from "../_libs/tanstack__react-query.mjs";
-import { i as listLiveStreams, o as startLiveStream } from "./live.functions-D5-mpNaX.mjs";
+import { i as listLiveStreams, o as startLiveStream } from "./live.functions-D1-YlYX_.mjs";
 import { t as Textarea } from "./textarea-DVfA9G13.mjs";
 import { a as DialogTitle, i as DialogHeader, n as DialogContent, o as DialogTrigger, r as DialogDescription, t as Dialog } from "./dialog-D8P3pPmh.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/live.index-tgW4bVd2.js
+//#region node_modules/.nitro/vite/services/ssr/assets/live.index-Fn4Gf6RD.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function LivePage() {
