@@ -9,7 +9,7 @@ export const listMyRooms = createServerFn({ method: "GET" })
 
 export const createRoom = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         name: z.string().trim().min(1).max(60),
@@ -32,7 +32,7 @@ export const createRoom = createServerFn({ method: "POST" })
 
 export const joinRoom = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         code: z.string().trim().min(4).max(12),
@@ -59,7 +59,7 @@ export const joinRoom = createServerFn({ method: "POST" })
 
 export const getRoom = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: room } = await context.supabase
       .from("rooms")
@@ -81,7 +81,7 @@ export const getRoom = createServerFn({ method: "GET" })
 
 export const getRoomMessages = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase
       .from("room_messages")
@@ -103,7 +103,7 @@ export const getRoomMessages = createServerFn({ method: "GET" })
 
 export const sendRoomMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ id: z.string().uuid(), body: z.string().trim().min(1).max(1000) }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -116,7 +116,7 @@ export const sendRoomMessage = createServerFn({ method: "POST" })
 
 export const leaveRoom = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await context.supabase
       .from("room_members")

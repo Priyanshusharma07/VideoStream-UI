@@ -1,0 +1,1 @@
+import{c as e}from"./useStore-o2Q-L78m.js";import{t}from"./AppShell-CZb86X4R.js";var n=e(),r=()=>(0,n.jsx)(t,{children:(0,n.jsx)(`p`,{className:`text-sm text-muted-foreground`,children:`This video could not be loaded.`})});export{r as errorComponent};

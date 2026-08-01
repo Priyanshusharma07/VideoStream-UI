@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { fetchLiveMessages, fetchLiveStream, fetchLiveStreams } from "./live.server";
 
 export const listLiveStreams = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({ status: z.enum(["live", "ended", "all"]).default("all") })
       .default({ status: "all" })
@@ -13,16 +13,16 @@ export const listLiveStreams = createServerFn({ method: "GET" })
   .handler(async ({ data }) => fetchLiveStreams(data.status));
 
 export const getLiveStream = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => fetchLiveStream(data.id));
 
 export const getLiveMessages = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => fetchLiveMessages(data.id));
 
 export const startLiveStream = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         title: z.string().trim().min(1).max(140),
@@ -45,7 +45,7 @@ export const startLiveStream = createServerFn({ method: "POST" })
 
 export const endLiveStream = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("live_streams")
@@ -58,7 +58,7 @@ export const endLiveStream = createServerFn({ method: "POST" })
 
 export const sendLiveMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ id: z.string().uuid(), body: z.string().trim().min(1).max(500) }).parse(input),
   )
   .handler(async ({ data, context }) => {

@@ -1,0 +1,1 @@
+import{c as e}from"./useStore-o2Q-L78m.js";import{E as t}from"./AppShell-CZb86X4R.js";var n=e();function r({className:e,...r}){return(0,n.jsx)(`div`,{className:t(`animate-pulse rounded-md bg-primary/10`,e),...r})}export{r as t};

@@ -8,7 +8,7 @@ const VIDEO_SELECT =
   "id, owner_id, channel_name, title, description, tags, visibility, duration_seconds, view_count, video_url, thumbnail_url, created_at";
 
 export const getProfile = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const client = publicClient();
     const { data: profile } = await client
@@ -55,7 +55,7 @@ export const getProfile = createServerFn({ method: "GET" })
 
 export const updateMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         display_name: z.string().trim().min(1).max(60),

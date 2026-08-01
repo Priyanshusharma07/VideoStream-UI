@@ -15,25 +15,25 @@ import {
 export const getFeed = createServerFn({ method: "GET" }).handler(async () => fetchFeed());
 
 export const searchVideos = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ q: z.string().max(120).default(""), tag: z.string().max(60).nullable().default(null) }).parse(input),
   )
   .handler(async ({ data }) => fetchSearch(data.q, data.tag));
 
 export const getVideo = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => fetchVideo(data.id));
 
 export const getComments = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => fetchComments(data.id));
 
 export const getLikeCount = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => fetchLikeCount(data.id));
 
 export const registerView = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     await bumpViews(data.id);
     return { ok: true };
@@ -53,7 +53,7 @@ export const getMyVideos = createServerFn({ method: "GET" })
 
 export const createVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         title: z.string().min(1).max(140),
@@ -93,7 +93,7 @@ export const createVideo = createServerFn({ method: "POST" })
 
 export const deleteVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("videos")
@@ -106,7 +106,7 @@ export const deleteVideo = createServerFn({ method: "POST" })
 
 export const toggleLike = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: existing } = await context.supabase
       .from("video_likes")
@@ -128,7 +128,7 @@ export const toggleLike = createServerFn({ method: "POST" })
 
 export const getMyLike = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: existing } = await context.supabase
       .from("video_likes")
@@ -141,7 +141,7 @@ export const getMyLike = createServerFn({ method: "GET" })
 
 export const addComment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ id: z.string().uuid(), body: z.string().min(1).max(2000) }).parse(input),
   )
   .handler(async ({ data, context }) => {
