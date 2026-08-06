@@ -12,12 +12,12 @@ export default defineConfig({
   nitro: {
     ...(isVercelBuild ? { preset: "vercel" } : {}),
     externals: {
-      inline: ["tslib", "@supabase/supabase-js", "@supabase/functions-js"],
+      inline: [/@supabase\/.*/, "tslib", "@supabase/supabase-js", "@supabase/functions-js"],
     },
   },
   vite: {
     ssr: {
-      noExternal: ["tslib", "@supabase/supabase-js", "@supabase/functions-js"],
+      noExternal: [/@supabase\/.*/, "tslib", "@supabase/supabase-js", "@supabase/functions-js"],
     },
   },
   tanstackStart: {
