@@ -9,7 +9,17 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 const isVercelBuild = process.env.VERCEL === "1" || process.env.VERCEL === "true";
 
 export default defineConfig({
-  nitro: isVercelBuild ? { preset: "vercel" } : undefined,
+  nitro: {
+    ...(isVercelBuild ? { preset: "vercel" } : {}),
+    externals: {
+      inline: ["tslib", "@supabase/supabase-js", "@supabase/functions-js"],
+    },
+  },
+  vite: {
+    ssr: {
+      noExternal: ["tslib", "@supabase/supabase-js", "@supabase/functions-js"],
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
