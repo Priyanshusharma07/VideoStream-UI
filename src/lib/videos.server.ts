@@ -25,11 +25,29 @@ export function publicClient(): DB {
 const SELECT =
   "id, owner_id, channel_name, title, description, tags, visibility, duration_seconds, view_count, video_url, thumbnail_url, created_at";
 
+const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
+
 async function signOne(client: DB, bucket: string, value: string | null): Promise<string | null> {
   if (!value) return null;
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  
+  const cacheKey = `${bucket}:${value}`;
+  const now = Date.now();
+  const cached = signedUrlCache.get(cacheKey);
+
+  if (cached && cached.expiresAt > now + 15 * 60 * 1000) {
+    return cached.url;
+  }
+
   const { data } = await client.storage.from(bucket).createSignedUrl(value, 60 * 60 * 6);
-  return data?.signedUrl ?? null;
+  if (data?.signedUrl) {
+    signedUrlCache.set(cacheKey, {
+      url: data.signedUrl,
+      expiresAt: now + 6 * 60 * 60 * 1000,
+    });
+    return data.signedUrl;
+  }
+  return null;
 }
 
 export async function withSignedMedia(client: DB, rows: VideoDTO[]): Promise<VideoDTO[]> {
